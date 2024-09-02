@@ -53,9 +53,9 @@ export default function AutoPlayVideoSlider() {
   }
 
   return (
-    <InView as='div' onChange={(inView, entry) => setIsVideoVisible(inView)}>
-      <div className="relative w-full lg:h-[600px]">
-        <div className="aspect-video bg-gray-200 rounded-lg overflow-hidden h-full">
+    <div className="relative w-full lg:max-h-[600px]">
+      <InView as='div' onChange={(inView, entry) => setIsVideoVisible(inView)}>
+        <div className="aspect-video overflow-hidden h-full">
           {videos.map((video, index) => (
             <div
               key={video.id}
@@ -71,12 +71,13 @@ export default function AutoPlayVideoSlider() {
                 playsInline
                 aria-label={video.title}
 
+
               />
               {/* <div className='top-1/2 flex lg:ml-[360px] absolute z-1 '>
                             <h1 className='text-lightCream text-5xl font-bold hover:hero-text transition duration-75'>Emfip Wool Dryer Balls</h1>
                         </div> */}
               <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-8 ">
-                <h2 className=" text-xl font-bold text-lightAlmond">{video.title}</h2>
+                {/* <h2 className=" text-xl font-bold text-lightAlmond">{video.title}</h2> */}
               </div>
             </div>
           ))}
@@ -111,7 +112,7 @@ export default function AutoPlayVideoSlider() {
                     <ChevronRight className="h-4 w-4" />
                 </Button>
             </div> */}
-      </div>
-    </InView>
+      </InView>
+    </div>
   )
 }
