@@ -4,7 +4,7 @@ import React, { useState, useRef, useEffect } from 'react'
 import Image from 'next/image'
 
 interface DraggableView360Props {
-  images: string[]
+  images: any[]
   width: number
   height: number
 }

@@ -21,7 +21,7 @@ export default function Cart() {
   const { setShowCheckout } = useInViewContext();
 
   const productPrice = 19.99
-  const shippingCost = 0 // Free shipping
+  const shippingCost: number = 0 // Free shipping
 
   const incrementQuantity = () => setQuantity(q => q + 1)
   const decrementQuantity = () => setQuantity(q => Math.max(1, q - 1))

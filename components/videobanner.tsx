@@ -63,15 +63,13 @@ export default function AutoPlayVideoSlider() {
                 } w-full -z-1`}
             >
               <video
-                ref={(el) => (videoRefs.current[index] = el)}
+                ref={(el: any) => (videoRefs.current[index] = el)}
                 src={video.src}
                 className="w-full h-full object-cover"
                 loop
                 muted
                 playsInline
                 aria-label={video.title}
-
-
               />
               {/* <div className='top-1/2 flex lg:ml-[360px] absolute z-1 '>
                             <h1 className='text-lightCream text-5xl font-bold hover:hero-text transition duration-75'>Emfip Wool Dryer Balls</h1>
