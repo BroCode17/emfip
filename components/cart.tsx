@@ -11,17 +11,25 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet"
+import Image from 'next/image'
+import { useInViewContext } from './inviewcontext'
 
 export default function Cart() {
   const [quantity, setQuantity] = useState(1)
   const [isOpen, setIsOpen] = useState(false)
+  // Get checkout context
+  const { setShowCheckout } = useInViewContext();
 
   const productPrice = 19.99
-  const shippingCost = 0 // Free shipping
+  const shippingCost: number = 0 // Free shipping
 
   const incrementQuantity = () => setQuantity(q => q + 1)
   const decrementQuantity = () => setQuantity(q => Math.max(1, q - 1))
+  const proceedToCheckout = () => {
+    setIsOpen(false)
+    setShowCheckout(true)
 
+  }
   const subtotal = productPrice * quantity
   const total = subtotal + shippingCost
 
@@ -38,26 +46,29 @@ export default function Cart() {
           <span className="sr-only">Open cart</span>
         </Button>
       </SheetTrigger>
-      <SheetContent>
+      <SheetContent className='bg-lightAlmond/90'>
         <SheetHeader>
-          <SheetTitle>Your Cart</SheetTitle>
+          <SheetTitle className='tracking-tighter font-bold '>Your Cart</SheetTitle>
           <SheetDescription>Review your items before checking out</SheetDescription>
         </SheetHeader>
         {quantity > 0 ? (
           <div className="mt-8 space-y-4">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between bg-white rounded-lg px-4">
               <div className="flex items-center space-x-4">
-                <img
-                  src="/placeholder.svg?height=64&width=64"
+                <Image
+                  src="/images/woooo.jpg"
                   alt="Wool Dryer Balls"
+                  width={40}
+                  height={40}
                   className="w-16 h-16 rounded-md object-cover"
+
                 />
                 <div>
                   <h3 className="font-medium">Eco-Friendly Wool Dryer Balls</h3>
                   <p className="text-sm text-gray-500">Set of 6</p>
                 </div>
               </div>
-              <div className="flex items-center space-x-2">
+              <div className="flex flex-col items-center justify-center  py-2 space-y-1">
                 <Button variant="outline" size="icon" onClick={decrementQuantity}>
                   <Minus className="h-4 w-4" />
                 </Button>
@@ -66,14 +77,14 @@ export default function Cart() {
                   min="1"
                   value={quantity}
                   onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
-                  className="w-16 text-center"
+                  className="w-full text-center"
                 />
                 <Button variant="outline" size="icon" onClick={incrementQuantity}>
                   <Plus className="h-4 w-4" />
                 </Button>
               </div>
             </div>
-            <div className="border-t pt-4">
+            <div className="border-t-2 border-black  pt-4">
               <div className="flex justify-between">
                 <span>Subtotal</span>
                 <span>${subtotal.toFixed(2)}</span>
@@ -87,7 +98,9 @@ export default function Cart() {
                 <span>${total.toFixed(2)}</span>
               </div>
             </div>
-            <Button className="w-full mt-4">Proceed to Checkout</Button>
+            <Button className="w-full mt-4" onClick={proceedToCheckout}>
+              Proceed to Checkout
+            </Button>
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center h-full">

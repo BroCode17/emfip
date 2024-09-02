@@ -26,15 +26,12 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${inter.className} bg-lightAlmond`}>
         <Banner />
-        <div>
-          <InViewContextProvider>
-            <HeaderAndVideo />
-          </InViewContextProvider>
-          <div className="max-w-[1200px] mx-auto">
-            {children}
-            <Footer />
-          </div>
-        </div>
+        <InViewContextProvider>
+          <HeaderAndVideo />
+
+          {children}
+          <Footer />
+        </InViewContextProvider>
       </body>
     </html>
   );

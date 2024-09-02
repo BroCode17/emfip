@@ -94,6 +94,9 @@
     .base-para {
         @apply max-w-[600px] text-gray-500 md:text-xl dark:text-gray-400
     }
+    /* .custom-blur-bg {
+      @apply bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60
+    } */
     .sand-texture {
         background:
           linear-gradient(45deg, #F5F5DC 25%, transparent 25%) -10px 0px/20px 20px,
