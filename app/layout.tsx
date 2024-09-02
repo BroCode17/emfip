@@ -1,6 +1,14 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import Header from "@/components/header";
+import Footer from "@/components/footer";
+import Cart from "@/components/cart";
+import { Banner } from "@/components/banner";
+import AutoPlayVideoSlider from "@/components/videobanner";
+import HeaderAndVideo from "@/components/headerandvido";
+import { InViewContextProvider } from "@/components/inviewcontext";
+
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -16,7 +24,18 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body className={`${inter.className} bg-lightAlmond`}>
+        <Banner />
+        <div>
+          <InViewContextProvider>
+            <HeaderAndVideo />
+          </InViewContextProvider>
+          <div className="max-w-[1200px] mx-auto">
+            {children}
+            <Footer />
+          </div>
+        </div>
+      </body>
     </html>
   );
 }
