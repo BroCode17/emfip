@@ -7,3 +7,14 @@ export interface Product {
   description: string;
   image: string;
 }
+
+export interface Customer {
+  full_name: string;
+  email: string;
+  address: string;
+  state: string;
+  city: string;
+  zip_code: string;
+  country?: string;
+
+}

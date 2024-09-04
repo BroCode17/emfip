@@ -1,9 +1,13 @@
 import React from 'react'
+import Login from './_components/login'
+import { getLoggedInUser } from '../api/appwriterapi'
 
-const LoginPages = () => {
+const LoginPage = async () => {
+  const user = await getLoggedInUser();
+  console.log(user)
   return (
-    <div>LoginPages</div>
+    <Login user={user} />
   )
 }
 
-export default LoginPages
+export default LoginPage

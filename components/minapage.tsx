@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils"
 import Image from "next/image"
 import DraggableView360 from "./dragableview"
 import ProceedToCheckoutModal from "./checkoutdialog"
+import ShowCaseSlider from "./showcaseslider"
 
 const SectionWrapper = ({ children, className, id }: { children: React.ReactNode, className?: string, id?: string }) => {
   return <section className={cn(`max-w-[1200px] mx-auto px-4 md:px-6`, className)} id={id}>
@@ -103,6 +104,10 @@ export default function Main() {
         </SectionWrapper>
         {/* <DraggableView360 images={infinityScrollImages} height={600} width={600} /> */}
         {/* Benefits */}
+        {/* Product ShowCase */}
+
+        <ShowCaseSlider />
+
         <section id="benefits" className="w-full py-12 md:py-24 lg:py-32 bg-white">
           <div className="container  max-w-[1200px] mx-auto">
             <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl text-center mb-8">Benefits</h2>
@@ -132,17 +137,19 @@ export default function Main() {
           </div>
         </section>
         {/* How to use */}
-        <SectionWrapper id="how-to-use" className="w-full py-12 md:py-24 lg:py-32">
-          <div className="container">
-            <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl text-center mb-8">How to Use</h2>
-            <ol className="space-y-4 list-decimal list-inside">
-              <li className="text-lg">Add 3-6 wool dryer balls to your dryer with your wet laundry.</li>
-              <li className="text-lg">Run your dryer as normal, but check it earlier as drying time may be reduced.</li>
-              <li className="text-lg">Remove your laundry and enjoy softer, less static-prone clothes!</li>
-              <li className="text-lg">Store the wool dryer balls in a dry place for next use.</li>
-            </ol>
-          </div>
-        </SectionWrapper>
+        <section className="bg-gray-100">
+          <SectionWrapper id="how-to-use" className="w-full py-12 md:py-24 lg:py-32">
+            <div className="container">
+              <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl text-center mb-8">How to Use</h2>
+              <ol className="space-y-4 list-decimal list-inside">
+                <li className="text-lg">Add 3-6 wool dryer balls to your dryer with your wet laundry.</li>
+                <li className="text-lg">Run your dryer as normal, but check it earlier as drying time may be reduced.</li>
+                <li className="text-lg">Remove your laundry and enjoy softer, less static-prone clothes!</li>
+                <li className="text-lg">Store the wool dryer balls in a dry place for next use.</li>
+              </ol>
+            </div>
+          </SectionWrapper>
+        </section>
         {/* Buy Now */}
         <section id="buy-now" className="w-full py-12 md:py-24 lg:py-32 bg-white">
           <SectionWrapper>
