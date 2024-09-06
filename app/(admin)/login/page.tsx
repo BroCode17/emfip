@@ -4,7 +4,6 @@ import { getLoggedInUser } from '../api/appwriterapi'
 
 const LoginPage = async () => {
   const user = await getLoggedInUser();
-  console.log(user)
   return (
     <Login user={user} />
   )

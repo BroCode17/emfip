@@ -19,7 +19,7 @@ export default function CustomersContent() {
   const allCustomers = async () => {
     try {
       setIsLoading(true)
-      const res = await fetch('../../api/controllers/customers')
+      const res = await fetch('../../api/controllers/customers',)
       const data = await res.json()
       setCustomers(data.documents)
       console.log(data)

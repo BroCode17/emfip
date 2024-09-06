@@ -19,15 +19,17 @@ export async function POST(request: NextRequest){
     //check if user is alread exist
 
     //hash password
-    const hashPassword = await bcrypt.hash(password, 10);
+    // Appwrite will hash the password
+    //const hashPassword = await bcrypt.hash(password, 10);
+
     //get appwrite session
     const {account}  = await createAdminClient()
 
     try {
        //create use first
-    await account.create(ID.unique(), email, hashPassword, name)
+    await account.create(ID.unique(), email, password, name)
     //create user session for login
-    const session = await account.createEmailPasswordSession(email, hashPassword)
+    const session = await account.createEmailPasswordSession(email, password)
 
     //save user in session
     cookies().set('session', session.secret, {

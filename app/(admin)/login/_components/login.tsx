@@ -9,12 +9,13 @@ import { Label } from "@/components/ui/label"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { AlertCircle } from "lucide-react"
 
+
 export default function Login({ user }: any) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const router = useRouter()
-  console.log(user)
+
   if (user)
     redirect('/dashboard')
 
@@ -23,19 +24,21 @@ export default function Login({ user }: any) {
     setError('')
 
     try {
-      // const result = await signIn('credentials', {
-      //   redirect: false,
-      //   email,
-      //   password,
-      // })
-
-      // if (result?.error) {
-      //   setError(result.error)
-      // } else {
-      //   router.push('/dashboard')
-      // }
-      console.log('LoggedIn')
+      const res = await fetch('../../api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Context-Type': 'application/json'
+        },
+        body: JSON.stringify({ email, password })
+      })
+      const data = await res.json()
+      if (data.error) {
+        setError(data.error)
+        return;
+      }
+      router.replace('/dashboard')
     } catch (err) {
+      console.log(err)
       setError('An error occurred during login')
     }
   }
