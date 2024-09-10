@@ -10,6 +10,8 @@ export function getError(error:any){
       return NextResponse.json({error: 'You are not authorized to perform this operation, contact admin'}, {status: error.code})
     case 'required_all':
       return NextResponse.json({error: 'All field are requried'}, {status: error.code})
+    case 'document_invalid_structure':
+      return NextResponse.json({error: error.message}, {status: error.code})
     default:
       return NextResponse.json({error: 'Server internal error'}, {status: 500})
   }

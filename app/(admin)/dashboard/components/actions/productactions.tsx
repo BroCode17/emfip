@@ -1,10 +1,9 @@
-import { Product } from "@/lib";
+import { ErrorMap, Product, ProductActionType } from "@/lib";
 import { ProductModal } from "../addneditproduct";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
@@ -12,33 +11,36 @@ import { EllipsisVerticalIcon } from "lucide-react";
 
 interface EditProductActionType {
   product: Product,
-  handleSubmit: (product: Product | string) => void
+  handleSubmit: (product: Product, action?: string) => void
+  allErrors: ErrorMap
 }
 
-const EditProductAction = ({ product, handleSubmit }: EditProductActionType) => {
-  return <ProductModal onSubmit={handleSubmit} product={product} />
+const EditProductAction = ({ product, handleSubmit, allErrors }: EditProductActionType) => {
+  return <ProductModal onSubmit={handleSubmit} product={product} allErrors={allErrors} />
 }
 
-interface DeleteProductActionType extends EditProductActionType { }
+interface DeleteProductActionType extends EditProductActionType {
+}
 /**
  *
  * @param param0 producta, handleDelete
  * @returns handleDelete with selected product id
  */
-const DeleteProductAction = ({ product, handleSubmit }: DeleteProductActionType) => {
+const DeleteProductAction = ({ product, handleSubmit, allErrors }: EditProductActionType) => {
 
   //return handleDelete function with product id as param
-  return <ProductModal onSubmit={handleSubmit} product={product} showDeleteModal={true} />
+  return <ProductModal onSubmit={handleSubmit} product={product} showDeleteModal={true} allErrors={allErrors} />
 }
 
 
 interface ActionBoxProps {
   product: Product,
-  handleSubmit?: (product: Product | string) => void
+  handleSubmit?: (product: Product, action?: string) => void
   handleDelete?: (id: string) => void
+  allError: ErrorMap
 }
 
-export const ActionBox = ({ product, handleSubmit }: ActionBoxProps) => {
+export const ActionBox = ({ product, handleSubmit, allError }: ActionBoxProps) => {
 
   return <DropdownMenu>
     <DropdownMenuTrigger>
@@ -47,13 +49,13 @@ export const ActionBox = ({ product, handleSubmit }: ActionBoxProps) => {
     </DropdownMenuTrigger>
     <DropdownMenuContent>
       <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-        <EditProductAction product={product} handleSubmit={handleSubmit!} />
+        <EditProductAction product={product} handleSubmit={handleSubmit!} allErrors={allError} />
       </DropdownMenuItem>
       <DropdownMenuSeparator />
       {/* Menu Item for delete */}
       <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="bg-red-500">
         {/* Delete item by id */}
-        <DeleteProductAction product={product} handleSubmit={handleSubmit!} />
+        <DeleteProductAction product={product} handleSubmit={handleSubmit} />
       </DropdownMenuItem>
     </DropdownMenuContent>
   </DropdownMenu>

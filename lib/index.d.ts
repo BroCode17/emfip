@@ -5,7 +5,7 @@ export interface Product {
   price: number;
   stock: number;
   description: string;
-  image: string;
+  image: File | undefined;
 }
 
 export interface Customer {
@@ -16,5 +16,12 @@ export interface Customer {
   city: string;
   zip_code: string;
   country?: string;
-
 }
+
+export interface ProductActionType {
+  //onSubmit: (product: Product, action?: string) => void;
+  product: any;
+  action?: string
+}
+
+export type ErrorMap = Map<string, string>;
