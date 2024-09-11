@@ -1,6 +1,7 @@
+import { generateOrderId } from "@/lib/help";
 import { getError } from "@/lib/logger";
 import { NextRequest, NextResponse } from "next/server";
-import { Client, Databases, ID} from "node-appwrite";
+import { Client, Databases, ID, Query} from "node-appwrite";
 
 //create client
 const client = new Client()
@@ -25,30 +26,70 @@ export async function GET(request:NextRequest){
 export async function POST(request: NextRequest){
   try {
     //Get data
-    const data = await request.json()
+    const data =  await request.json()
     const customerObject = data.customers;
-    const orderObjext = data.orders;
+    const orderObject = data.orders;
+    const items = data.orderItems;
 
-  const customerDoc = await database.createDocument(
+    //check if custmer exist
+
+    const existCustomer = await database.listDocuments(
     process.env.APPWRITE_DATABASE_ID as string, // database id
    process.env.APPWRITE_CUSTOMERS_COLLECTION_ID as string, //collection id
-    ID.unique(),
-    customerObject
+   [Query.equal('email', [customerObject.email])]
   )
 
-  await database.createDocument(
+ let newCustomer;
+
+  if(existCustomer.total === 0){
+      newCustomer = await database.createDocument(
+      process.env.APPWRITE_DATABASE_ID as string, // database id
+     process.env.APPWRITE_CUSTOMERS_COLLECTION_ID as string, //collection id
+      ID.unique(),
+      customerObject
+    )
+  }
+
+
+
+ // create order items
+  let itemNumber = 1;
+  const order_item = []
+  for (const item of items) {
+    console.log(item.product_id)
+    const res = await database.createDocument(
+      process.env.APPWRITE_DATABASE_ID!,
+      process.env.APPWRITE_ORDER_ITEM_COLLECTION_ID!,
+      // ID.custom('order_item_'+itemNumber.toString()),
+      ID.unique(),
+      {
+        product_id: item.product_id.toString(),
+        quantity: item.quantity,
+        price_at_purchase: item.price_at_purchase
+      }
+    );
+
+    order_item.push(res.$id)
+    itemNumber++;
+  }
+   console.log("Order item", existCustomer)
+  //  return NextResponse.json({success: true})
+  const order = await database.createDocument(
     process.env.APPWRITE_DATABASE_ID as string, // database id
    process.env.APPWRITE_ORDER_COLLECTION_ID as string, //collection id
-    ID.unique(),
+    generateOrderId().toString(),
     {
-      customer_id: customerDoc.$id,
-      ...orderObjext
+      customer_id: newCustomer ? newCustomer.$id : existCustomer.documents[0].$id,
+      order_item: [...order_item],
+      ...orderObject
     }
   )
-  return NextResponse.json({crated: true})
+
+
+  return NextResponse.json({success: true, orderId: order.$id})
   } catch (error) {
     console.error(error);
-    return NextResponse.json({crated: false})
+    return getError(error)
   }
 }
 

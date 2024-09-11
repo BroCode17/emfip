@@ -25,7 +25,6 @@ const ProductPage = () => {
   }, [])
 
   useEffect(() => {
-
   }, [isError, allErrors])
 
   const handleGetAllProduct = async () => {
@@ -46,69 +45,69 @@ const ProductPage = () => {
 
   const handleSubmit = async (product: Product, action?: string) => {
     const formData = new FormData();
+    const imageId = product.imageId
+    const productId = product.id
+
     Object.entries(product).forEach((entry) => {
-      formData.append(entry[0] as string, entry[1] as any)
+      if (entry[0] !== 'imageId')
+        formData.append(entry[0] as string, entry[1] as any)
     })
     // Reset all password
     setAllErrors(new Map())
     if (action) {
       try {
-        let response = undefined
-        switch (action) {
-          case 'delete':
-            console.log('Delete called')
-            break;
-          default:
-            response = await fetch('../../api/controllers/products', {
-              method: 'PUT',
-              body: formData
+        const response = await fetch(`../../api/controllers/products?type=${action}&productId=${productId}&&imageId=${imageId}`, {
+          method: action === 'delete' ? 'DELETE' : 'PUT',
+          // Only include the body when the action is 'update'
+          ...(action === 'update' && { body: formData }),
+        })
+        const data = await response.json()
+        console.log(data)
+        if (!data.success) {
+          //  console.log(data.error)
+          Object.entries(data.error).forEach((e: any) => {
+            const key = e[0]
+            const value = e[1][0]
+            setAllErrors((prev: ErrorMap) => {
+              const map = new Map(prev)
+              map.set(key, value)
+              return map
             })
-            const data = await response.json()
-            if (!data.success) {
-              //  console.log(data.error)
-              Object.entries(data.error).forEach((e: any) => {
-
-                const key = e[0]
-                const value = e[1][0]
-                setAllErrors((prev: ErrorMap) => {
-                  const map = new Map(prev)
-                  map.set(key, value)
-                  return map
-                })
-              })
-            }
-            break;
+          })
+          router.refresh()
+          return
         }
+        console.log(data)
       } catch (error) {
+      }
+    } else {
 
+      try {
+        const respones = await fetch('../../api/controllers/products', {
+          method: 'POST',
+          body: formData
+        });
+        const res = await respones.json()
+        if (!respones.ok) {
+          setIsError(res.error)
+          return
+        }
+        // console.log(res.error)
+        //Toaste
+        toast({
+          title: "Successs",
+          description: res.message,
+          action: (
+            <ToastAction altText="Goto schedule to undo">Undo</ToastAction>
+          ),
+        })
+        console.log(res)
+      } catch (error) {
+        console.log("This is error", error);
+      } finally {
+        setIsError("")
       }
     }
-    try {
-      const respones = await fetch('../../api/controllers/products', {
-        method: 'POST',
-        body: formData
-      });
-      const res = await respones.json()
-      if (!respones.ok) {
-        setIsError(res.error)
-        return
-      }
-      // console.log(res.error)
-      //Toaste
-      toast({
-        title: "Successs",
-        description: res.message,
-        action: (
-          <ToastAction altText="Goto schedule to undo">Undo</ToastAction>
-        ),
-      })
-      console.log(res)
-    } catch (error) {
-      console.log("This is error", error);
-    } finally {
-      setIsError("")
-    }
-
   }
 
   // Delete item with specific id

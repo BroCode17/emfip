@@ -15,20 +15,20 @@ import {
 import { DialogDescription } from '@radix-ui/react-dialog'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { AlertCircle } from 'lucide-react'
-import { ErrorMap, ProductActionType } from '@/lib'
+import { ErrorMap, Product, ProductActionType } from '@/lib'
 
 
-interface Product {
-  id?: string;
+export interface ProductFromDB {
+  $id?: string;
   name: string;
   price: number;
   stock: number;
   description: string;
-  image: File | undefined;
+  image: string[];
 }
 
 interface ProductFormProps {
-  product?: Product;
+  product?: ProductFromDB;
   onSubmit: (product: Product, action?: string) => void;
   onClose: () => void;
   showDeleteModal?: boolean,
@@ -46,8 +46,9 @@ export function ProductForm({ product, onSubmit, showDeleteModal, onClose, isErr
     image: undefined,
   })
   const [error, setError] = useState<string | null>(null)
-  const [previewUrl, setPreviewUrl] = useState<string | null>(product?.image as any || '')
+  const [previewUrl, setPreviewUrl] = useState<string | null>(product?.image[1] || '')
   const fileInputRef = useRef<HTMLInputElement>(null)
+
 
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -72,7 +73,8 @@ export function ProductForm({ product, onSubmit, showDeleteModal, onClose, isErr
     // This founction is for update and delete
     if (product) {
 
-      formData.id = product?.$id
+      formData.id = product?.$id // document id
+      formData.imageId = product.image[0] // image id
       // Case for delete
       if (showDeleteModal) {
         //add the id field
@@ -204,7 +206,7 @@ export function ProductForm({ product, onSubmit, showDeleteModal, onClose, isErr
 }
 
 interface ProductModalProps {
-  product?: Product;
+  product?: ProductFromDB;
   showDeleteModal?: boolean;
   onSubmit: (product: Product, action?: string) => void
   isError?: string,

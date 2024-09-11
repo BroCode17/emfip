@@ -12,6 +12,10 @@ export function getError(error:any){
       return NextResponse.json({error: 'All field are requried'}, {status: error.code})
     case 'document_invalid_structure':
       return NextResponse.json({error: error.message}, {status: error.code})
+    case 'document_not_found':
+      return NextResponse.json({error: error.message}, {status: error.code})
+    case 'general_query_invalid':
+      return NextResponse.json({error: error.message}, {status: error.code})
     default:
       return NextResponse.json({error: 'Server internal error'}, {status: 500})
   }

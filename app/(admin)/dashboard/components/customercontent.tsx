@@ -22,7 +22,6 @@ export default function CustomersContent() {
       const res = await fetch('../../api/controllers/customers',)
       const data = await res.json()
       setCustomers(data.documents)
-      console.log(data)
 
     } catch (error) {
       setIsError('Opps!...something happend whiles fetching data, try refreshing the browser')
@@ -54,7 +53,7 @@ export default function CustomersContent() {
             <TableCell>$59.97</TableCell>
           </TableRow>
           {customers.map((customer: Customer) => (
-            <TableRow key={customer.email}>
+            <TableRow key={customer.$id}>
               <TableCell>{customer.full_name}</TableCell>
               <TableCell>{customer.email}</TableCell>
               <TableCell>3</TableCell>

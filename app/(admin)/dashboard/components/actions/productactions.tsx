@@ -1,5 +1,5 @@
 import { ErrorMap, Product, ProductActionType } from "@/lib";
-import { ProductModal } from "../addneditproduct";
+import { ProductFromDB, ProductModal } from "../addneditproduct";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,7 +10,7 @@ import {
 import { EllipsisVerticalIcon } from "lucide-react";
 
 interface EditProductActionType {
-  product: Product,
+  product: ProductFromDB,
   handleSubmit: (product: Product, action?: string) => void
   allErrors: ErrorMap
 }
@@ -34,7 +34,7 @@ const DeleteProductAction = ({ product, handleSubmit, allErrors }: EditProductAc
 
 
 interface ActionBoxProps {
-  product: Product,
+  product: ProductFromDB,
   handleSubmit?: (product: Product, action?: string) => void
   handleDelete?: (id: string) => void
   allError: ErrorMap

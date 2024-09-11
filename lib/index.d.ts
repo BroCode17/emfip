@@ -6,6 +6,8 @@ export interface Product {
   stock: number;
   description: string;
   image: File | undefined;
+  // this field is for update purpose
+  imageId?: string;
 }
 
 export interface Customer {
