@@ -27,3 +27,46 @@ export interface ProductActionType {
 }
 
 export type ErrorMap = Map<string, string>;
+
+
+/** App State */
+// Define the possible order statuses
+type OrderStatus = 'SHIPPED' | 'PENDING' | 'DELIVERED' | 'CANCELLED';
+
+// Define the structure for an order item
+export interface OrderItem {
+  $id: string;
+  product_id: string;
+  quantity: number;
+  price_at_purchase: number;
+  image?: any;
+  set?: string;
+  name: string;
+  price: number
+
+}
+
+// Define the structure for customer information
+export interface CustomerTypes {
+  full_name: string;
+  email: string;
+  address: string;
+  city: string;
+  state: string;
+  zip_code: string;
+  country: string;
+}
+
+// Define the structure for order information
+export interface Order {
+  order_date: string;
+  total_amount: number;
+  status: OrderStatus;
+}
+
+// Define the main structure that combines all the above
+export interface OrderData {
+  orders: Order;
+  customers: Customer;
+  orderItems: OrderItem[];
+}

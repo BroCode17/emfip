@@ -1,0 +1,47 @@
+.toasts {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 100;
+}
+
+.toast{
+
+  color: white;
+  padding: 0 10px;
+  width: 300px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 50px;
+  animation: slidein;
+  animation-duration: 0.35s
+
+
+}
+
+@keyframes slidein {
+  0%{
+      transform: translateX(100%);
+  }
+  60%{
+      transform: translateX(-15%);
+  }
+  80%{
+      transform: translateX(5%);
+  }
+  80%{
+      transform: translateX(0%);
+  }
+}
+
+.close-btn {
+  position: absolute;
+  top: 30%;
+  right: 5px;
+  background: none;
+  cursor: pointer;
+}

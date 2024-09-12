@@ -20,16 +20,17 @@ const EditProductAction = ({ product, handleSubmit, allErrors }: EditProductActi
 }
 
 interface DeleteProductActionType extends EditProductActionType {
+  isError?: string;
 }
 /**
  *
  * @param param0 producta, handleDelete
  * @returns handleDelete with selected product id
  */
-const DeleteProductAction = ({ product, handleSubmit, allErrors }: EditProductActionType) => {
+const DeleteProductAction = ({ product, handleSubmit, allErrors, isError }: DeleteProductActionType) => {
 
   //return handleDelete function with product id as param
-  return <ProductModal onSubmit={handleSubmit} product={product} showDeleteModal={true} allErrors={allErrors} />
+  return <ProductModal onSubmit={handleSubmit} product={product} showDeleteModal={true} allErrors={allErrors} isError={isError}/>
 }
 
 
@@ -37,10 +38,11 @@ interface ActionBoxProps {
   product: ProductFromDB,
   handleSubmit?: (product: Product, action?: string) => void
   handleDelete?: (id: string) => void
-  allError: ErrorMap
+  allError: ErrorMap,
+  isError?: string
 }
 
-export const ActionBox = ({ product, handleSubmit, allError }: ActionBoxProps) => {
+export const ActionBox = ({ product, handleSubmit, allError, isError}: ActionBoxProps) => {
 
   return <DropdownMenu>
     <DropdownMenuTrigger>
@@ -55,7 +57,7 @@ export const ActionBox = ({ product, handleSubmit, allError }: ActionBoxProps) =
       {/* Menu Item for delete */}
       <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="bg-red-500">
         {/* Delete item by id */}
-        <DeleteProductAction product={product} handleSubmit={handleSubmit} />
+        <DeleteProductAction product={product} handleSubmit={handleSubmit} isError={isError} />
       </DropdownMenuItem>
     </DropdownMenuContent>
   </DropdownMenu>

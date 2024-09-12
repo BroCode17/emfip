@@ -50,7 +50,6 @@ export function ProductForm({ product, onSubmit, showDeleteModal, onClose, isErr
   const fileInputRef = useRef<HTMLInputElement>(null)
 
 
-
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
@@ -107,6 +106,7 @@ export function ProductForm({ product, onSubmit, showDeleteModal, onClose, isErr
         </Alert>
       )}
       {showDeleteModal ? <div>
+
         <Label htmlFor="name">Confirm Item to be deleted name</Label>
         <Input
           id="name"
@@ -216,10 +216,13 @@ interface ProductModalProps {
 export function ProductModal({ product, onSubmit, showDeleteModal, isError, allErrors }: ProductModalProps) {
   const [isOpen, setIsOpen] = useState(false)
 
+
+
   const handleSubmit = (product: Product, action?: string) => {
     onSubmit(product, action)
     //setIsOpen(false)
   }
+
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>

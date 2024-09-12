@@ -68,13 +68,13 @@ function DashboardContent() {
  */
 export default function AdminPage() {
   const [activeSection, setActiveSection] = useState('dashboard')
-
+  const [totalProduct, setTotalProduct] = useState(0)
   const renderContent = () => {
     switch (activeSection) {
       case 'dashboard':
         return <DashboardContent />
       case 'products':
-        return <ProductPage />
+        return <ProductPage/>
       case 'orders':
         return <OrdersContent />
       case 'customers':

@@ -33,9 +33,6 @@ const ProductPage = () => {
       const res = await fetch('../../api/controllers/products')
       const jsonResponse = await res.json()
       setProducts(jsonResponse.documents)
-
-      console.log(jsonResponse)
-
     } catch (error) {
       console.log(error)
     } finally {
@@ -62,7 +59,10 @@ const ProductPage = () => {
           ...(action === 'update' && { body: formData }),
         })
         const data = await response.json()
-        console.log(data)
+        console.log(data.error)
+        if(data.error){
+          setIsError(data.error)
+        }
         if (!data.success) {
           //  console.log(data.error)
           Object.entries(data.error).forEach((e: any) => {
@@ -74,7 +74,7 @@ const ProductPage = () => {
               return map
             })
           })
-          router.refresh()
+          handleGetAllProduct();
           return
         }
         console.log(data)
@@ -138,7 +138,7 @@ const ProductPage = () => {
                 <TableCell>${product.price}</TableCell>
                 <TableCell>{product.stock}</TableCell>
                 <TableCell>
-                  <ActionBox product={product} handleSubmit={handleSubmit} allError={allErrors} />
+                  <ActionBox product={product} handleSubmit={handleSubmit} allError={allErrors} isError={isError}/>
                 </TableCell>
               </TableRow>
             ))

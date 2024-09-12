@@ -9,7 +9,6 @@ const HeaderAndVideo = () => {
   return (
     <>
       <Header />
-      <AutoPlayVideoSlider />
     </>
   )
 }

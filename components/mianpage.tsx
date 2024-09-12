@@ -1,15 +1,27 @@
-import React from "react"
+'use client'
+import React, { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Star, Leaf, Clock, Zap } from "lucide-react"
 import AutoSlidingSlider from "./slider"
 import { infinityScrollImages } from "@/utils/data";
 import { ReviewForm } from "./reviewbox";
-import { cn } from "@/lib/utils"
+import { cn, formatToLocaleCurrency } from "@/lib/utils"
 import Image from "next/image"
 import DraggableView360 from "./dragableview"
 import ProceedToCheckoutModal from "./checkoutdialog"
 import ShowCaseSlider from "./showcaseslider"
+import { useAppContext } from "./_context/appcontext"
+import { useToast } from "./_context/toast/toast-context"
+import {z} from 'zod'
+import Cookies from "js-cookie"
+
+const emailSchema = z.object({
+  email: z.string().email('Please, enter a valid email')
+})
+
+// Infer the TypeScript type from the schema
+type UserFormData = z.infer<typeof emailSchema>;
 
 const SectionWrapper = ({ children, className, id }: { children: React.ReactNode, className?: string, id?: string }) => {
   return <section className={cn(`max-w-[1200px] mx-auto px-4 md:px-6`, className)} id={id}>
@@ -17,10 +29,81 @@ const SectionWrapper = ({ children, className, id }: { children: React.ReactNode
   </section>
 }
 
-
 export default function Main() {
+  const {customerEmail, updateCustomerEmail, addToCart, cartItems} = useAppContext()
+  const toast = useToast()
+  const [emailError, setEmailError] = useState<Partial<UserFormData>>({})
+  const [product, setProduct] = useState<any>();
+  const [email, setEmail]  = useState<UserFormData>({
+    email: ''
+  })
+
+  useEffect(() => {
+    getAllProducts()
+  }, [])
+
+
+  const getAllProducts = async () => {
+    try {
+      const res = await fetch('../api/controllers/products')
+      const data = await res.json();
+      if(res.ok)
+        setProduct(data.documents[0])
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setEmail(prev => ({
+      ...prev,
+      [name]: name === 'price' ? parseInt(value) || 0 : value,
+    }));
+  };
+
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    const fieldSchema = emailSchema.shape[name as keyof UserFormData];
+    try {
+      fieldSchema.parse(name === 'age' ? parseInt(value) || 0 : value);
+      // If validation passes, clear the error for this field
+      setEmailError(prev => ({ ...prev, [name]: undefined }));
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        setEmailError(prev => ({ ...prev, [name]: error.errors[0].message }));
+      }
+    }
+  };
+  const handleAdd = () => {
+      if(!email.email){
+        setEmailError({email: 'Enter your email to continue'})
+        return
+      }
+      try {
+        const validateWithZod = emailSchema.parse(email)
+        console.log(validateWithZod)
+        toast?.open('Item added')
+        updateCustomerEmail(validateWithZod.email)
+
+        addToCart(product)
+        setEmail(prev => ({...prev, email: ''}))
+
+      } catch (error) {
+        if(error instanceof z.ZodError){
+          const formattedErrors = error.errors.reduce((acc, curr) => {
+            const key = curr.path[0] as keyof UserFormData;
+            acc[key] = curr.message;
+            return acc;
+          }, {} as Partial<UserFormData>);
+          setEmailError(formattedErrors)
+        }
+      }
+  }
+
   return (
     <div className="flex flex-col min-h-screen relative">
+
       <div className="z-40">
         <ProceedToCheckoutModal />
       </div>
@@ -165,12 +248,23 @@ export default function Main() {
                 <div className="flex flex-col space-y-4 lg:justify-center">
                   <div className="space-y-2">
                     <h3 className="text-2xl font-bold">Eco-Friendly Wool Dryer Balls</h3>
-                    <p className="text-xl font-bold">$19.99</p>
+                    <p className="text-xl font-bold">{product ?  formatToLocaleCurrency(Number(product.price || 0)) : '$19.99'}</p>
                     <p className="text-sm text-gray-500 dark:text-gray-400">Set of 6 | Free Shipping</p>
                   </div>
                   <div className="space-y-2">
-                    <Input placeholder="Enter your email" type="email" />
-                    <Button className="w-full">Add to Cart</Button>
+                    {emailError.email && <div className="text-destructive">{emailError.email}</div>}
+                    <Input placeholder="Enter your email" type="email"
+                    required
+                    value={email.email}
+                    name="email"
+                    id="email"
+                    onChange={handleChange}
+                    className={`${emailError.email && 'border-destructive focus-within:border-none'}`}
+                    onBlur={handleBlur}
+                    />
+                    <Button className="w-full"
+                      onClick={handleAdd}
+                    >Add to Cart</Button>
                   </div>
                   <p className="text-sm text-gray-500 dark:text-gray-400">
                     30-day money-back guarantee. No questions asked.

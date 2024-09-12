@@ -215,13 +215,13 @@ const getImageUrl = (imageId: string) => {
 async function deleteProduct(ducomentId: string, imageId: string) {
   try {
 
-    //delete image
-    imageUploader(ImageActionType.DELETE, null , imageId)
     const res = await db.deleteDocument(
       process.env.APPWRITE_DATABASE_ID as string,
       process.env.APPWRITE_PRODUCTS_COLLECTION_ID as string,
       ducomentId
     )
+    //delete image
+    imageUploader(ImageActionType.DELETE, null , imageId)
     return NextResponse.json({res})
   } catch (error) {
     console.log(error)

@@ -16,6 +16,8 @@ export function getError(error:any){
       return NextResponse.json({error: error.message}, {status: error.code})
     case 'general_query_invalid':
       return NextResponse.json({error: error.message}, {status: error.code})
+    case 'document_delete_restricted':
+      return NextResponse.json({error: 'Product can not be deleted'}, {status: error.code})
     default:
       return NextResponse.json({error: 'Server internal error'}, {status: 500})
   }

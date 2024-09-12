@@ -26,10 +26,13 @@ import {
 import { Input } from "@/components/ui/input"
 import { toast } from '@/hooks/use-toast'
 import { useInViewContext } from './inviewcontext'
+import { useToast } from './_context/toast/toast-context'
+import { useRouter } from 'next/navigation'
+import { useAppContext } from './_context/appcontext'
 
 
 const formSchema = z.object({
-  fullName: z.string().min(2, {
+  full_name: z.string().min(2, {
     message: "Full name must be at least 2 characters.",
   }),
   email: z.string().email({
@@ -41,7 +44,7 @@ const formSchema = z.object({
   city: z.string().min(2, {
     message: "City must be at least 2 characters.",
   }),
-  zipCode: z.string().regex(/^\d{5}(-\d{4})?$/, {
+  zip_code: z.string().regex(/^\d{5}(-\d{4})?$/, {
     message: "Please enter a valid ZIP code.",
   }),
 })
@@ -49,15 +52,17 @@ const formSchema = z.object({
 export default function ProceedToCheckoutModal() {
   const { showCheckout, setShowCheckout } = useInViewContext()
   const [isOpen, setIsOpen] = useState(showCheckout || false)
-
+  const router = useRouter()
+  const toast = useToast()
+  const {updateCustomer, customerInfo, saveState} = useAppContext()
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      fullName: "",
+      full_name: "",
       email: "",
       address: "",
       city: "",
-      zipCode: "",
+      zip_code: "",
     },
   })
 
@@ -66,19 +71,19 @@ export default function ProceedToCheckoutModal() {
   function onSubmit(values: z.infer<typeof formSchema>) {
     // Here you would typically send the form data to your server
     // and then redirect to the payment page
-    console.log(values)
-    toast({
-      title: "Checkout information submitted",
-      description: "You are being redirected to the payment page...",
-    })
-    setIsOpen(false)
-    setShowCheckout(false)
-    // Simulate redirect to payment page
-    setTimeout(() => {
-      alert("Redirecting to payment page...")
-    }, 2000)
-  }
+    // console.log(values)
+    updateCustomer(values)
 
+    saveState();
+    // Simulate redirect to payment page
+    toast?.open("Redirecting to payment page...")
+    setTimeout(() => {
+      // setIsOpen(false)
+      // setShowCheckout(false)
+      // router.push('/payment')
+      console.log(customerInfo)
+    }, 3000)
+  }
   if (!showCheckout)
     return
 
@@ -98,7 +103,7 @@ export default function ProceedToCheckoutModal() {
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
               control={form.control}
-              name="fullName"
+              name="full_name"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Full Name</FormLabel>
@@ -150,7 +155,7 @@ export default function ProceedToCheckoutModal() {
             />
             <FormField
               control={form.control}
-              name="zipCode"
+              name="zip_code"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>ZIP Code</FormLabel>
