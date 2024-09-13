@@ -5,6 +5,7 @@ import React, { useEffect, useState } from 'react'
 import Cart from './cart'
 import { useInViewContext } from './inviewcontext'
 import { usePathname } from 'next/navigation'
+import SmoothScrollLink from './scrolllink'
 
 const Header = () => {
   const [isVisible, setIsVisible] = useState(true)
@@ -45,15 +46,15 @@ const Header = () => {
         <span className="sr-only">Eco Laundry Co.</span>
       </a>
       <nav className="ml-auto flex gap-4 sm:gap-6 items-center">
-        <a className="text-sm font-medium hover:underline underline-offset-4" href="#benefits">
+        <SmoothScrollLink className="text-sm font-medium hover:underline underline-offset-4" href="#benefits">
           Benefits
-        </a>
-        <a className="text-sm font-medium hover:underline underline-offset-4" href="#how-to-use">
+        </SmoothScrollLink>
+        <SmoothScrollLink className="text-sm font-medium hover:underline underline-offset-4" href="#how-to-use">
           How to Use
-        </a>
-        <a className="text-sm font-medium hover:underline underline-offset-4" href="#buy-now">
+        </SmoothScrollLink>
+        <SmoothScrollLink className="text-sm font-medium hover:underline underline-offset-4" href="#buy-now">
           Buy Now
-        </a>
+        </SmoothScrollLink>
         <Cart />
       </nav>
     </header >

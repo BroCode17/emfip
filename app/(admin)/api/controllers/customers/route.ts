@@ -55,23 +55,28 @@ export async function POST(request: NextRequest){
  // create order items
   let itemNumber = 1;
   const order_item = []
-  for (const item of items) {
-    console.log(item.product_id)
-    const res = await database.createDocument(
-      process.env.APPWRITE_DATABASE_ID!,
-      process.env.APPWRITE_ORDER_ITEM_COLLECTION_ID!,
-      // ID.custom('order_item_'+itemNumber.toString()),
-      ID.unique(),
-      {
-        product_id: item.product_id.toString(),
-        quantity: item.quantity,
-        price_at_purchase: item.price_at_purchase
-      }
-    );
-
-    order_item.push(res.$id)
-    itemNumber++;
+  try {
+    for (const item of items) {
+      console.log(item.product_id)
+      const res = await database.createDocument(
+        process.env.APPWRITE_DATABASE_ID!,
+        process.env.APPWRITE_ORDER_ITEM_COLLECTION_ID!,
+        // ID.custom('order_item_'+itemNumber.toString()),
+        ID.unique(),
+        {
+          product_id: item.product_id.toString(),
+          quantity: item.quantity,
+          price_at_purchase: item?.price_at_purchase
+        }
+      );
+  
+      order_item.push(res.$id)
+      itemNumber++;
+    }
+  } catch (error) {
+    return getError(error)
   }
+
    console.log("Order item", existCustomer)
   //  return NextResponse.json({success: true})
   const order = await database.createDocument(

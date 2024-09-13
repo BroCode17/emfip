@@ -15,7 +15,7 @@ import Link from "next/link";
 
 
 
-import React, { FormEvent, useState } from "react";
+import React, { FormEvent, useEffect, useState } from "react";
 type CheckoutFormProps = {
   product?: {};
   clientSecret: string;
@@ -30,7 +30,9 @@ const stripePromise = loadStripe(
 
 
 const CheckoutForm = ({ clientSecret, state }: CheckoutFormProps) => {
+ useEffect(() => {
 
+ }, [clientSecret])
   return (
     <Elements
       options={{

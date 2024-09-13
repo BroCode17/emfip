@@ -1,64 +1,73 @@
-'use client'
-import React, { useEffect, useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Star, Leaf, Clock, Zap } from "lucide-react"
-import AutoSlidingSlider from "./slider"
+"use client";
+import React, { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Star, Leaf, Clock, Zap } from "lucide-react";
+import AutoSlidingSlider from "./slider";
 import { infinityScrollImages } from "@/utils/data";
-import { ReviewForm } from "./reviewbox";
-import { cn, formatToLocaleCurrency } from "@/lib/utils"
-import Image from "next/image"
-import DraggableView360 from "./dragableview"
-import ProceedToCheckoutModal from "./checkoutdialog"
-import ShowCaseSlider from "./showcaseslider"
-import { useAppContext } from "./_context/appcontext"
-import { useToast } from "./_context/toast/toast-context"
-import {z} from 'zod'
-import Cookies from "js-cookie"
+import { cn, formatToLocaleCurrency } from "@/lib/utils";
+import Image from "next/image";
+import ProceedToCheckoutModal from "./checkoutdialog";
+import ShowCaseSlider from "./showcaseslider";
+import { useAppContext } from "./_context/appcontext";
+import { useToast } from "./_context/toast/toast-context";
+import { z } from "zod";
 
 const emailSchema = z.object({
-  email: z.string().email('Please, enter a valid email')
-})
+  email: z.string().email("Please, enter a valid email"),
+});
 
 // Infer the TypeScript type from the schema
 type UserFormData = z.infer<typeof emailSchema>;
 
-const SectionWrapper = ({ children, className, id }: { children: React.ReactNode, className?: string, id?: string }) => {
-  return <section className={cn(`max-w-[1200px] mx-auto px-4 md:px-6`, className)} id={id}>
-    {children}
-  </section>
-}
+const SectionWrapper = ({
+  children,
+  className,
+  id,
+}: {
+  children: React.ReactNode;
+  className?: string;
+  id?: string;
+}) => {
+  return (
+    <section
+      className={cn(`max-w-[1200px] mx-auto px-4 md:px-6`, className)}
+      id={id}
+    >
+      {children}
+    </section>
+  );
+};
 
 export default function Main() {
-  const {customerEmail, updateCustomerEmail, addToCart, cartItems} = useAppContext()
-  const toast = useToast()
-  const [emailError, setEmailError] = useState<Partial<UserFormData>>({})
+  const { customerEmail, updateCustomerEmail, addToCart, saveState } =
+    useAppContext();
+  const toast = useToast();
+  const [emailError, setEmailError] = useState<Partial<UserFormData>>({});
   const [product, setProduct] = useState<any>();
-  const [email, setEmail]  = useState<UserFormData>({
-    email: ''
-  })
+  const [email, setEmail] = useState<UserFormData>({
+    email: "",
+  });
 
   useEffect(() => {
-    getAllProducts()
-  }, [])
-
+    getAllProducts();
+  }, []);
 
   const getAllProducts = async () => {
     try {
-      const res = await fetch('../api/controllers/products')
+      const res = await fetch("../api/controllers/products");
       const data = await res.json();
-      if(res.ok)
-        setProduct(data.documents[0])
+      if (res.ok) setProduct(data.documents[0]);
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-  }
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setEmail(prev => ({
+    setEmail((prev) => ({
       ...prev,
-      [name]: name === 'price' ? parseInt(value) || 0 : value,
+      [name]: name === "price" ? parseInt(value) || 0 : value,
     }));
   };
 
@@ -66,44 +75,44 @@ export default function Main() {
     const { name, value } = e.target;
     const fieldSchema = emailSchema.shape[name as keyof UserFormData];
     try {
-      fieldSchema.parse(name === 'age' ? parseInt(value) || 0 : value);
+      fieldSchema.parse(name === "age" ? parseInt(value) || 0 : value);
       // If validation passes, clear the error for this field
-      setEmailError(prev => ({ ...prev, [name]: undefined }));
+      setEmailError((prev) => ({ ...prev, [name]: undefined }));
     } catch (error) {
       if (error instanceof z.ZodError) {
-        setEmailError(prev => ({ ...prev, [name]: error.errors[0].message }));
+        setEmailError((prev) => ({ ...prev, [name]: error.errors[0].message }));
       }
     }
   };
   const handleAdd = () => {
-      if(!email.email){
-        setEmailError({email: 'Enter your email to continue'})
-        return
+    if (!email.email) {
+      setEmailError({ email: "Enter your email to continue" });
+      return;
+    }
+    try {
+      const validateWithZod = emailSchema.parse(email);
+      toast?.open("Item added");
+      updateCustomerEmail(validateWithZod.email);
+
+      addToCart(product);
+      setEmail((prev) => ({ ...prev, email: "" }));
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        const formattedErrors = error.errors.reduce((acc, curr) => {
+          const key = curr.path[0] as keyof UserFormData;
+          acc[key] = curr.message;
+          return acc;
+        }, {} as Partial<UserFormData>);
+        setEmailError(formattedErrors);
       }
-      try {
-        const validateWithZod = emailSchema.parse(email)
-        console.log(validateWithZod)
-        toast?.open('Item added')
-        updateCustomerEmail(validateWithZod.email)
+    }
+  };
 
-        addToCart(product)
-        setEmail(prev => ({...prev, email: ''}))
-
-      } catch (error) {
-        if(error instanceof z.ZodError){
-          const formattedErrors = error.errors.reduce((acc, curr) => {
-            const key = curr.path[0] as keyof UserFormData;
-            acc[key] = curr.message;
-            return acc;
-          }, {} as Partial<UserFormData>);
-          setEmailError(formattedErrors)
-        }
-      }
-  }
-
+  // Saving anytime changes are made
+  saveState();
+  console.log("From main", customerEmail);
   return (
     <div className="flex flex-col min-h-screen relative">
-
       <div className="z-40">
         <ProceedToCheckoutModal />
       </div>
@@ -113,7 +122,10 @@ export default function Main() {
             <div className=" ">
               <h3 className="text-gray-500">Eco-Friendly Laundry Solutions</h3>
               <h1 className="base-header -ml-1">Empfip Wool Dryer Balls</h1>
-              <p className="mt-10">Make your laundry softer, reduce drying time, and save money with our eco-friendly wool dryer balls.</p>
+              <p className="mt-10">
+                Make your laundry softer, reduce drying time, and save money
+                with our eco-friendly wool dryer balls.
+              </p>
             </div>
           </div>
         </SectionWrapper>
@@ -124,7 +136,7 @@ export default function Main() {
                 className="w-8 h-auto fill-zinc-900 dark:fill-zinc-50 md:w-10 max-lg:self-end bg-amber-200"
                 viewBox="0 0 35 36"
                 xmlns="http://www.w3.org/2000/svg"
-                style={{ transform: 'none' }}
+                style={{ transform: "none" }}
               >
                 <path d="M17.833 35.056C15.337 26.509 9.379 21.045 0.740997 17.964C10.633 16.295 15.641 9.936 17.833 0.873001C21.825 10.05 27.402 15.993 34.925 17.964C26.459 21.374 20.738 27.052 17.833 35.056Z"></path>
               </svg>
@@ -136,15 +148,24 @@ export default function Main() {
               >
                 <path
                   d="M12.6591 0.630493C11.0871 7.12849 7.49706 11.6875 0.40506 12.8845C6.59706 15.0935 10.8691 19.0105 12.6591 25.1385C14.7411 19.4005 18.8431 15.3295 24.9131 12.8845C19.5201 11.4705 15.5211 7.21049 12.6591 0.630493Z"
-                  style={{ transform: 'none', transformOrigin: '12.6591px 12.8845px' }}
+                  style={{
+                    transform: "none",
+                    transformOrigin: "12.6591px 12.8845px",
+                  }}
                 ></path>
                 <path
                   d="M23.511 18.045C22.714 21.338 20.895 23.648 17.301 24.255C20.439 25.374 22.604 27.359 23.511 30.464C24.566 27.556 26.645 25.494 29.721 24.255C26.988 23.538 24.961 21.379 23.511 18.045Z"
-                  style={{ transform: 'none', transformOrigin: '23.511px 24.2545px' }}
+                  style={{
+                    transform: "none",
+                    transformOrigin: "23.511px 24.2545px",
+                  }}
                 ></path>
               </svg>
             </div>
-            <p className="text-gray-500 dark:text-gray-400 mb-10">Discover the benefits of our wool dryer balls. Eco-friendly, cost-effective, and perfect for every load.</p>
+            <p className="text-gray-500 dark:text-gray-400 mb-10">
+              Discover the benefits of our wool dryer balls. Eco-friendly,
+              cost-effective, and perfect for every load.
+            </p>
           </div>
           <AutoSlidingSlider images={infinityScrollImages} />
         </SectionWrapper>
@@ -164,7 +185,8 @@ export default function Main() {
                     Eco-Friendly Wool Dryer Balls
                   </h1>
                   <p className="max-w-[600px] text-gray-500 md:text-xl dark:text-gray-400">
-                    Reduce drying time, save energy, and soften your clothes naturally with our premium wool dryer balls.
+                    Reduce drying time, save energy, and soften your clothes
+                    naturally with our premium wool dryer balls.
                   </p>
                 </div>
                 <div className="flex items-center space-x-2">
@@ -173,7 +195,9 @@ export default function Main() {
                   <Star className="w-5 h-5 fill-primary" />
                   <Star className="w-5 h-5 fill-primary" />
                   <Star className="w-5 h-5 fill-primary" />
-                  <span className="text-sm font-medium">4.9 (2,354 reviews)</span>
+                  <span className="text-sm font-medium">
+                    4.9 (2,354 reviews)
+                  </span>
                 </div>
                 <div className="flex flex-col gap-2 min-[400px]:flex-row">
                   <a href="#buy-now">
@@ -181,7 +205,6 @@ export default function Main() {
                   </a>
                 </div>
               </div>
-
             </div>
           </div>
         </SectionWrapper>
@@ -191,15 +214,21 @@ export default function Main() {
 
         <ShowCaseSlider />
 
-        <section id="benefits" className="w-full py-12 md:py-24 lg:py-32 bg-white">
+        <section
+          id="benefits"
+          className="w-full py-12 md:py-24 lg:py-32 bg-white "
+        >
           <div className="container  max-w-[1200px] mx-auto">
-            <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl text-center mb-8">Benefits</h2>
+            <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl text-center mb-8">
+              Benefits
+            </h2>
             <div className="grid gap-6 lg:grid-cols-3">
               <div className="flex flex-col items-center space-y-2 border-gray-800 p-4 rounded-lg">
                 <Leaf className="w-12 h-12 text-green-500" />
                 <h3 className="text-xl font-bold">Eco-Friendly</h3>
                 <p className="text-gray-500 dark:text-gray-400 text-center">
-                  100% natural and biodegradable, reducing plastic waste from dryer sheets.
+                  100% natural and biodegradable, reducing plastic waste from
+                  dryer sheets.
                 </p>
               </div>
               <div className="flex flex-col items-center space-y-2 border-gray-800 p-4 rounded-lg">
@@ -221,50 +250,86 @@ export default function Main() {
         </section>
         {/* How to use */}
         <section className="bg-gray-100">
-          <SectionWrapper id="how-to-use" className="w-full py-12 md:py-24 lg:py-32">
+          <SectionWrapper
+            id="how-to-use"
+            className="w-full py-12 md:py-24 lg:py-32"
+          >
             <div className="container">
-              <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl text-center mb-8">How to Use</h2>
+              <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl text-center mb-8">
+                How to Use
+              </h2>
               <ol className="space-y-4 list-decimal list-inside">
-                <li className="text-lg">Add 3-6 wool dryer balls to your dryer with your wet laundry.</li>
-                <li className="text-lg">Run your dryer as normal, but check it earlier as drying time may be reduced.</li>
-                <li className="text-lg">Remove your laundry and enjoy softer, less static-prone clothes!</li>
-                <li className="text-lg">Store the wool dryer balls in a dry place for next use.</li>
+                <li className="text-lg">
+                  Add 3-6 wool dryer balls to your dryer with your wet laundry.
+                </li>
+                <li className="text-lg">
+                  Run your dryer as normal, but check it earlier as drying time
+                  may be reduced.
+                </li>
+                <li className="text-lg">
+                  Remove your laundry and enjoy softer, less static-prone
+                  clothes!
+                </li>
+                <li className="text-lg">
+                  Store the wool dryer balls in a dry place for next use.
+                </li>
               </ol>
             </div>
           </SectionWrapper>
         </section>
         {/* Buy Now */}
-        <section id="buy-now" className="w-full py-12 md:py-24 lg:py-32 bg-white">
+        <section
+          id="buy-now"
+          className="w-full py-12 md:py-24 lg:py-32 bg-white"
+        >
           <SectionWrapper>
             <div className="container">
               <div className="grid gap-6 md:grid-cols-2 lg:gap-12">
                 <div className="flex flex-col justify-center space-y-4">
-                  <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">Ready to Make the Switch?</h2>
+                  <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">
+                    Ready to Make the Switch?
+                  </h2>
                   <p className="max-w-[600px] text-gray-500 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed dark:text-gray-400">
-                    Get your set of 6 premium wool dryer balls today and start enjoying softer, faster-drying laundry while
-                    reducing your environmental impact.
+                    Get your set of 6 premium wool dryer balls today and start
+                    enjoying softer, faster-drying laundry while reducing your
+                    environmental impact.
                   </p>
                 </div>
                 <div className="flex flex-col space-y-4 lg:justify-center">
                   <div className="space-y-2">
-                    <h3 className="text-2xl font-bold">Eco-Friendly Wool Dryer Balls</h3>
-                    <p className="text-xl font-bold">{product ?  formatToLocaleCurrency(Number(product.price || 0)) : '$19.99'}</p>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">Set of 6 | Free Shipping</p>
+                    <h3 className="text-2xl font-bold">
+                      Eco-Friendly Wool Dryer Balls
+                    </h3>
+                    <p className="text-xl font-bold">
+                      {product
+                        ? formatToLocaleCurrency(Number(product.price || 0))
+                        : "$19.99"}
+                    </p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      Set of 6 | Free Shipping
+                    </p>
                   </div>
                   <div className="space-y-2">
-                    {emailError.email && <div className="text-destructive">{emailError.email}</div>}
-                    <Input placeholder="Enter your email" type="email"
-                    required
-                    value={email.email}
-                    name="email"
-                    id="email"
-                    onChange={handleChange}
-                    className={`${emailError.email && 'border-destructive focus-within:border-none'}`}
-                    onBlur={handleBlur}
+                    {emailError.email && (
+                      <div className="text-destructive">{emailError.email}</div>
+                    )}
+                    <Input
+                      placeholder="Enter your email"
+                      type="email"
+                      required
+                      value={email.email}
+                      name="email"
+                      id="email"
+                      onChange={handleChange}
+                      className={`${
+                        emailError.email &&
+                        "border-destructive focus-within:border-none"
+                      }`}
+                      onBlur={handleBlur}
                     />
-                    <Button className="w-full"
-                      onClick={handleAdd}
-                    >Add to Cart</Button>
+                    <Button className="w-full" onClick={handleAdd}>
+                      Add to Cart
+                    </Button>
                   </div>
                   <p className="text-sm text-gray-500 dark:text-gray-400">
                     30-day money-back guarantee. No questions asked.
@@ -279,7 +344,6 @@ export default function Main() {
           <ReviewForm />
         </SectionWrapper> */}
       </main>
-
-    </div >
-  )
+    </div>
+  );
 }

@@ -57,7 +57,7 @@ export const ActionBox = ({ product, handleSubmit, allError, isError}: ActionBox
       {/* Menu Item for delete */}
       <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="bg-red-500">
         {/* Delete item by id */}
-        <DeleteProductAction product={product} handleSubmit={handleSubmit} isError={isError} />
+        <DeleteProductAction product={product} handleSubmit={handleSubmit!} isError={isError} allErrors={allError}/>
       </DropdownMenuItem>
     </DropdownMenuContent>
   </DropdownMenu>

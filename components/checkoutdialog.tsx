@@ -1,10 +1,10 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import * as z from 'zod'
-import { Button } from "@/components/ui/button"
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -13,7 +13,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
+} from "@/components/ui/dialog";
 import {
   Form,
   FormControl,
@@ -22,14 +22,13 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { toast } from '@/hooks/use-toast'
-import { useInViewContext } from './inviewcontext'
-import { useToast } from './_context/toast/toast-context'
-import { useRouter } from 'next/navigation'
-import { useAppContext } from './_context/appcontext'
-
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { toast } from "@/hooks/use-toast";
+import { useInViewContext } from "./inviewcontext";
+import { useToast } from "./_context/toast/toast-context";
+import { useRouter } from "next/navigation";
+import { useAppContext } from "./_context/appcontext";
 
 const formSchema = z.object({
   full_name: z.string().min(2, {
@@ -47,14 +46,16 @@ const formSchema = z.object({
   zip_code: z.string().regex(/^\d{5}(-\d{4})?$/, {
     message: "Please enter a valid ZIP code.",
   }),
-})
+  state: z.string().min(2).max(2, "Enter state initials").toUpperCase(),
+});
 
 export default function ProceedToCheckoutModal() {
-  const { showCheckout, setShowCheckout } = useInViewContext()
-  const [isOpen, setIsOpen] = useState(showCheckout || false)
-  const router = useRouter()
-  const toast = useToast()
-  const {updateCustomer, customerInfo, saveState} = useAppContext()
+  const { showCheckout, setShowCheckout } = useInViewContext();
+  const [isOpen, setIsOpen] = useState(showCheckout || false);
+  const router = useRouter();
+  const toast = useToast();
+  const { updateCustomer, customerInfo, cartItems, updateCustomerEmail, info } =
+    useAppContext();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -63,29 +64,28 @@ export default function ProceedToCheckoutModal() {
       address: "",
       city: "",
       zip_code: "",
+      state: "",
     },
-  })
+  });
 
-  const handleSetShowCheckout = () => setShowCheckout(false)
+  useEffect(() => {}, [info]);
+
+  const handleSetShowCheckout = () => setShowCheckout(false);
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     // Here you would typically send the form data to your server
-    // and then redirect to the payment page
-    // console.log(values)
-    updateCustomer(values)
+    updateCustomer(values);
 
-    saveState();
     // Simulate redirect to payment page
-    toast?.open("Redirecting to payment page...")
+    toast?.open("Redirecting to payment page...");
+
     setTimeout(() => {
-      // setIsOpen(false)
-      // setShowCheckout(false)
-      // router.push('/payment')
-      console.log(customerInfo)
-    }, 3000)
+      setIsOpen(false);
+      setShowCheckout(false);
+      router.push("/payment");
+    }, 3000);
   }
-  if (!showCheckout)
-    return
+  if (!showCheckout) return;
 
   return (
     <Dialog open={showCheckout} onOpenChange={handleSetShowCheckout}>
@@ -121,7 +121,11 @@ export default function ProceedToCheckoutModal() {
                 <FormItem>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input type="email" placeholder="bro@example.com" {...field} />
+                    <Input
+                      type="email"
+                      placeholder="bro@example.com"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -153,19 +157,39 @@ export default function ProceedToCheckoutModal() {
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name="zip_code"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>ZIP Code</FormLabel>
-                  <FormControl>
-                    <Input placeholder="12345" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <div className="flex gap-2">
+              <FormField
+                control={form.control}
+                name="state"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>State</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="IL"
+                        {...field}
+                        maxLength={2}
+                        className="uppercase"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="zip_code"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Zip Code</FormLabel>
+                    <FormControl>
+                      <Input placeholder="12345" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
             <DialogFooter>
               <Button type="submit">Proceed to Payment</Button>
             </DialogFooter>
@@ -173,5 +197,5 @@ export default function ProceedToCheckoutModal() {
         </Form>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

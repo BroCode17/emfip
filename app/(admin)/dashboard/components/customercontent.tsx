@@ -52,7 +52,7 @@ export default function CustomersContent() {
             <TableCell>3</TableCell>
             <TableCell>$59.97</TableCell>
           </TableRow>
-          {customers.map((customer: Customer) => (
+          {customers.map((customer: any) => (
             <TableRow key={customer.$id}>
               <TableCell>{customer.full_name}</TableCell>
               <TableCell>{customer.email}</TableCell>

@@ -1,4 +1,4 @@
-import Main from '@/components/mianpage'
+import Main from '@/components/mainpage'
 import AutoPlayVideoSlider from '@/components/videobanner'
 import React from 'react'
 

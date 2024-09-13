@@ -27,13 +27,6 @@ function formatReadableDate(isoString: Date) {
   return formattedDate;
 }
 
-// //Currency convertor
-// function formatToLocaleCurrency(number: any, locale = navigator.language, currency = 'USD') {
-//   return new Intl.NumberFormat(locale, { style: 'currency', currency }).format(number);
-// }
-// function formatToLocaleCurrency(number: number, locale: string = navigator.language, currency: string = 'USD'): string {
-//   return new Intl.NumberFormat(locale, { style: 'currency', currency }).format(number);
-// }
 
 type FormatCurrencyOptions = {
   locale?: string;
@@ -70,7 +63,17 @@ function formatToLocaleCurrency(
   }
 }
 
+/**
+ * 
+ * @param daysToAdd number of day
+ * @returns return date on the formate eg September 20, 2024
+ */
+function getFormattedFutureDate(daysToAdd = 3) {
+  const date = new Date(Date.now() + daysToAdd * 24 * 60 * 60 * 1000);
+  return date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+}
 export {
   formatReadableDate,
-  formatToLocaleCurrency
+  formatToLocaleCurrency,
+  getFormattedFutureDate,
 }
