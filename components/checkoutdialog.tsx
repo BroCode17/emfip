@@ -24,11 +24,13 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { toast } from "@/hooks/use-toast";
+
 import { useInViewContext } from "./inviewcontext";
 import { useToast } from "./_context/toast/toast-context";
 import { useRouter } from "next/navigation";
 import { useAppContext } from "./_context/appcontext";
+import { generateOrderId } from "@/lib/utils";
+import Cookies from "js-cookie";
 
 const formSchema = z.object({
   full_name: z.string().min(2, {
@@ -82,7 +84,9 @@ export default function ProceedToCheckoutModal() {
     setTimeout(() => {
       setIsOpen(false);
       setShowCheckout(false);
-      router.push("/payment");
+      const orderId = generateOrderId();
+      Cookies.set('orderId', orderId, {expires: 3})
+      router.push(`/payment/${orderId}`);
     }, 3000);
   }
   if (!showCheckout) return;
@@ -92,7 +96,7 @@ export default function ProceedToCheckoutModal() {
       {/* <DialogTrigger asChild>
         <Button variant="default" onClick={() => setIsOpen(true)}>Proceed to Checkout</Button>
       </DialogTrigger> */}
-      <DialogContent className="sm:max-w-[425px] bg-lightAlmond border-black border">
+      <DialogContent className="sm:max-w-[425px] bg-gradient-to-b from-lightAlmond to-gray-50 border-black border">
         <DialogHeader>
           <DialogTitle>Checkout Information</DialogTitle>
           <DialogDescription>

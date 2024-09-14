@@ -1,6 +1,9 @@
 'use client'
+import { Phone } from 'lucide-react'
+import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import React from 'react'
+import LegalLinks from './legal-link'
 
 const Footer = () => {
   const pathname = usePathname()
@@ -10,14 +13,14 @@ const Footer = () => {
   return (
     <>
       <footer className=" flex flex-col gap-2 sm:flex-row py-6 w-full shrink-0 items-center px-4 md:px-6 border-t bg-gray-100">
-        <p className="text-xs text-gray-500 dark:text-gray-400">© 2024 Emfip LLC. All rights reserved | +1 (413)-241-9571</p>
+        <p className="text-xs text-gray-500 dark:text-gray-400 flex">© 2024 Emfip LLC. All rights reserved | 
+          <a href='tel:+1-902-241-3443' className='flex ml-1 cursor-pointer '>
+            <Phone size={16} />
+             +1 (902)-241-3443
+            </a>
+        </p>
         <nav className="sm:ml-auto flex gap-4 sm:gap-6">
-          <a className="text-xs hover:underline underline-offset-4" href="#">
-            Terms of Service
-          </a>
-          <a className="text-xs hover:underline underline-offset-4" href="#">
-            Privacy
-          </a>
+         <LegalLinks />
         </nav>
       </footer>
     </>

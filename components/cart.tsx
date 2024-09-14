@@ -50,7 +50,7 @@ export default function Cart() {
           <span className="sr-only">Open cart</span>
         </Button>
       </SheetTrigger>
-      <SheetContent className='bg-lightAlmond/90'>
+      <SheetContent className='bg-gradient-to-br from-lightAlmond to-gray-50' >
         <SheetHeader>
           <SheetTitle className='tracking-tighter font-bold '>Your Cart</SheetTitle>
           <SheetDescription>Review your items before checking out</SheetDescription>
@@ -59,7 +59,7 @@ export default function Cart() {
           <div className="mt-8 space-y-4">
             {
               cartItems.map((item:OrderItem) => (
-                <div className="flex items-center justify-between bg-white rounded-lg px-4" key={item.$id}>
+                <div className="flex items-center justify-between bg-white rounded-lg px-4 border border-black/20" key={item.$id}>
                 <div className="flex items-center space-x-4">
                   <Image
                     src={item.image[1]}

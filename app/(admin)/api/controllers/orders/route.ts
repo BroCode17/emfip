@@ -1,6 +1,7 @@
-import { Client, Databases, ID, Query } from "node-appwrite";
+import { Client, Databases } from "node-appwrite";
 import { NextRequest, NextResponse } from "next/server";
 import { getError } from "@/lib/logger";
+import { createAndUpdateStatus } from "../customers/route";
 
 const client = new Client()
   .setEndpoint(process.env.APPWRITE_END_POINT!)
@@ -10,15 +11,28 @@ const db = new Databases(client);
 
 // Get all order
 export async function GET(request: NextRequest) {
+  const orderId = request.nextUrl.searchParams.get('orderId')
+
   try {
-    const orderList: any = await db.listDocuments(
-      process.env.APPWRITE_DATABASE_ID as string, // database id
-      process.env.APPWRITE_ORDER_COLLECTION_ID as string, //collection id
-      [] // queries
-    );
-    return NextResponse.json({ success: true, orderList });
+    let orderList:any;
+    if(orderId){
+      orderList = await db.getDocument(
+        process.env.APPWRITE_DATABASE_ID as string, // database id
+        process.env.APPWRITE_ORDER_COLLECTION_ID as string,
+        orderId
+      )
+    }else{
+      orderList = await db.listDocuments(
+        process.env.APPWRITE_DATABASE_ID as string, // database id
+        process.env.APPWRITE_ORDER_COLLECTION_ID as string, //collection id
+        [] // queries
+      );
+    }
+    
+  
+    return NextResponse.json({ success: true, orderList});
   } catch (error) {
-    console.log(error);
+    console.log(error)
     return getError(error);
   }
 }
@@ -34,11 +48,11 @@ export async function POST(request: NextRequest) {
       },
       body: JSON.stringify(responseBody),
     });
-    const { orderId } = await order.json();
-
-    return NextResponse.json({ success: true, orderId });
+    
+    //return the response 
+    return order
   } catch (error) {
-    console.log(error);
+    return getError(error);
   }
 }
 
@@ -46,23 +60,47 @@ export async function POST(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams
   const orderId = searchParams.get('orderId')
-  const currentStatus = searchParams.get('currentStatus')
+  let currentStatus = searchParams.get('currentStatus')
    // Validate the new status
    console.log(currentStatus)
-   const validStatuses = ['Processing', 'Pending', 'Delivered', 'Cancelled', 'Shipped'];
+   const validStatuses = ['Processing', 'Pending', 'Delivered', 'Cancelled', 'Shipped', 'OutofDelivery'];
    if (!validStatuses.includes(currentStatus!)) {
        throw new Error(`Invalid status. Must be one of: ${validStatuses.join(', ')}`);
    }
-  try {
-    const res = await db.updateDocument(
+
+  // some check
+  currentStatus = currentStatus === 'OutofDelivery' ? 'Out of Delivery': currentStatus 
+
+   try {
+    const document = await db.getDocument(
       process.env.APPWRITE_DATABASE_ID as string, // database id
-      process.env.APPWRITE_ORDER_COLLECTION_ID as string, //collection id
-      orderId!,
-      {status: currentStatus?.toString()}
-    )
-    return NextResponse.json({success: true})
+      process.env.APPWRITE_ORDER_COLLECTION_ID as string,
+      orderId!
+    );
+  
+
+    // Check if the current status exists in the document
+    const isCurrentStatusExist = document.status.find((el: any) => el.currentStatus === currentStatus);
+    console.log('isExist', isCurrentStatusExist)
+    if (!isCurrentStatusExist) {
+      // Create and update status if it doesn't exist
+      const statusId: any = await createAndUpdateStatus(currentStatus as string);
+      const updateStatus = [...document.status, statusId.$id];
+  
+      // Update order in the database and return the result
+      await db.updateDocument(
+        process.env.APPWRITE_DATABASE_ID as string, // database id
+        process.env.APPWRITE_ORDER_COLLECTION_ID as string,
+        orderId!,
+        { status: updateStatus }
+      );
+    } else {
+      // If the current status already exists, update the status collection
+      await createAndUpdateStatus(currentStatus as string, isCurrentStatusExist.$id);
+    }
+  
+    return NextResponse.json({ success: true, currentStatus });
   } catch (error) {
-    console.log(error)
-    return getError(error)
-  }
+    return getError(error);
+  }  
 }

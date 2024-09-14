@@ -70,3 +70,57 @@ export interface OrderData {
   customers: Customer;
   orderItems: OrderItem[];
 }
+export interface TermsOfService {
+  id: string;
+  version: string;
+  lastUpdated: Date;
+  acceptanceClause: string;
+  userObligations: string[];
+  intellectualPropertyRights: string;
+  productDescriptions: string;
+  pricingAndPayment: string;
+  shippingAndDelivery: string;
+  returnsAndRefunds: string;
+  limitationOfLiability: string;
+  disputeResolution: string;
+  terminationClause: string;
+  governingLaw: string;
+  contactInformation: {
+    email: string;
+    phone?: string;
+    address: string;
+  };
+}
+
+
+export interface PrivacyPolicy {
+  id: string;
+  version: string;
+  lastUpdated: Date;
+  introductionStatement: string;
+  dataCollected: string[];
+  dataUsage: string[];
+  dataSharing: string[];
+  cookiesPolicy: string;
+  userRights: string[];
+  dataRetention: string;
+  dataProtectionMeasures: string;
+  thirdPartyLinks: string;
+  childrenPrivacy: string;
+  internationalDataTransfers?: string;
+  policyChanges: string;
+  contactInformation: {
+    email: string;
+    phone?: string;
+    address: string;
+  };
+  gdprCompliance?: {
+    dataController: string;
+    legalBasis: string[];
+    dataSubjectRights: string[];
+  };
+  ccpaCompliance?: {
+    californiaResidentRights: string[];
+    saleOfPersonalInformation: string;
+  };
+}

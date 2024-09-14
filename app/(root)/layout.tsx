@@ -12,7 +12,7 @@ export default function RootLayout({
 }>) {
   return (
     <main className="flex flex-col min-h-screen">
-        <Banner />
+        {/* <Banner /> */}
         <InViewContextProvider>
         <Header />
          <section className="flex-1">

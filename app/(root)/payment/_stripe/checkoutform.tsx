@@ -1,7 +1,7 @@
 "use client";
 import { useAppContext } from "@/components/_context/appcontext";
 import { Button } from "@/components/ui/button";
-import { formatToLocaleCurrency } from "@/lib/utils";
+import { formatToLocaleCurrency, generateOrderId } from "@/lib/utils";
 import {
   Elements,
   LinkAuthenticationElement,
@@ -12,6 +12,7 @@ import {
 import { loadStripe } from "@stripe/stripe-js";
 import { Home } from "lucide-react";
 import Link from "next/link";
+import Cookies from "js-cookie";
 
 
 
@@ -20,7 +21,8 @@ type CheckoutFormProps = {
   product?: {};
   clientSecret: string;
   id?: number;
-  state: any
+  state: any;
+  orderId: string;
 };
 
 
@@ -29,7 +31,7 @@ const stripePromise = loadStripe(
 );
 
 
-const CheckoutForm = ({ clientSecret, state }: CheckoutFormProps) => {
+const CheckoutForm = ({ clientSecret, state, orderId }: CheckoutFormProps) => {
  useEffect(() => {
 
  }, [clientSecret])
@@ -48,7 +50,7 @@ const CheckoutForm = ({ clientSecret, state }: CheckoutFormProps) => {
       stripe={stripePromise}
     >
 
-      <Form state={state}/>
+      <Form state={state} orderId={orderId}/>
     </Elements>
   );
 };
@@ -80,7 +82,7 @@ const appearance = {
     }
   };
 
-function Form({state}: {state:any}) {
+function Form({state, orderId}: {state:any, orderId: string}) {
   const stripe = useStripe();
   const elements = useElements();
   const [isLoading, setIsLoading] = useState(false);
@@ -96,15 +98,15 @@ function Form({state}: {state:any}) {
     if (stripe === null || elements === null || email === null) return;
 
     setIsLoading(true);
-
+    
+    Cookies.set('orderId', orderId)
     //Check for existing orders
-
     stripe
       .confirmPayment({
         elements,
         confirmParams: {
           // return_url: `${process.env.NEXT_PUBLIC_SERVER_URL  || 'https://amoarte.online'}/thankyou`,
-         return_url: `http://localhost:3000/thankyou`,
+         return_url: `http://localhost:3000/thankyou/${orderId}`,
         },
       })
       .then(({ error }) => {

@@ -14,6 +14,11 @@ images: {
     },
   ]
 },
+// env: {
+//   EMAIL: process.env.EMAIL,
+//   EMAIL_PASS: process.env.EMAIL_PASS,
+//   ADMIN_EMAIL: process.env.ADMIN_EMAIL,
+// },
 };
 
 export default nextConfig;

@@ -22,72 +22,50 @@ export async function POST(req: NextRequest) {
     const totalAmount = charge.amount
     const orderItems = JSON.parse(charge.metadata.itemList)
     const customerInfo = JSON.parse(charge.metadata.customerInfo)
-    console.log(orderItems)
-    console.log(customerInfo)
-    const dbProduct: Array<{
-      product: string;
-      orderedQuantity: number;
-      itemSize: string;
-    }> = [];
-//     itemPurchased.forEach((element: any) => {
-//       dbProduct.push({
-//         product: element.id,
-//         orderedQuantity: element.quantity,
-//         itemSize: element.size,
-//       });
-//     });
+    const orderId = charge.metadata.orderId
       const dbObject = {
-      
-        "orders": {
-        "order_date": "2023-08-30T10:20:00.000Z",
-        "total_amount": 49,
-        "status": "Shipped"
+        orders: {
+          orderId,
+          order_date: new Date().toISOString(),
+          total_amount: totalAmount / 100,
+          status: "Pending",
         },
-        "customers": {
-            "full_name": "John Doe",
-            "email": "bro.doe@example.com",
-            "address": "123 Maple Street",
-            "city": "Springfield",
-            "state": "IL",
-            "zip_code": "62704",
-            "country": "USA"
-          },
-        "orderItems": [
-        {
-          "product_id": "66e0df1d001f6ee383a0",
-          "quantity": 2
-          
-        },
-        {
-          "product_id": "66e0f1df002e71cafae5",
-          "quantity": 4
-        }
-      ]
-        
-        
+        customers: customerInfo,
+        orderItems
       }
 
-
-
-  
-
-//     const orderObject = {
-//       refrenceNumber,
-//       customerEmail: email,
-//       products: dbProduct,
-//       customerShippingInformation: shippingInfo,
-//       totalAmount: amount / 100,
-//     };
-  
-//     try {
-//       const response = await axios.post(
-//         `${process.env.NEXT_PUBLIC_NGROK_URL}/api/v1/orders/create-order`,
-//         orderObject
-//       );
-//      // console.log("PUT Response:", response.data);
-//     } catch (error: any) {
-//       console.error("Error updating data:", error);
-//     }
+    try {
+      const response = await fetch(`http://localhost:3000/api/controllers/orders`,
+        {
+          method: 'POST',
+          body: JSON.stringify(dbObject),
+        },
+      );
+      const {order} = await response.json()
+      console.log(order)
+      const emailObject = {
+        orderNumber: order.$id,
+        customerName: customerInfo.full_name,
+        totalAmount: order.total_amount,
+        shippingAddress: `${customerInfo.address}, ${customerInfo.city}, ${customerInfo.state}, ${customerInfo.zip_code}`,
+        orderDate: order.$createdAt,
+        quantity: order.order_item[0].quantity,
+        price: order.order_item[0].price_at_purchase,
+        customerEmail: order.customer_id.email,
+        trackingUrl: 'http://localhost:3000/order-tracking?orderId=ORD-20240914T15360-8WJKX'
+      }
+      console.log(emailObject)
+    
+    //  // make email send request
+    const emailResponse = await fetch('http://localhost:3000/api/sendmail', {
+      method: 'POST',
+      body: JSON.stringify(emailObject)
+    })
+    const email = await emailResponse.json()
+     console.log(email)
+    } catch (error: any) {
+      console.error("Error updating data:", error);
+    }
   }
 
   return new NextResponse();

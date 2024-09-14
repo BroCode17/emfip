@@ -1,9 +1,8 @@
+import LaundryLoading from '@/components/loading'
 import React from 'react'
 
 const Loading = () => {
-  return (
-    <div>Loading</div>
-  )
+  return <LaundryLoading />
 }
 
 export default Loading

@@ -40,7 +40,7 @@ const SectionWrapper = ({
 };
 
 export default function Main() {
-  const { customerEmail, updateCustomerEmail, addToCart, saveState } =
+  const { customerEmail, updateCustomerEmail, addToCart, saveState, resetState } =
     useAppContext();
   const toast = useToast();
   const [emailError, setEmailError] = useState<Partial<UserFormData>>({});
@@ -110,7 +110,8 @@ export default function Main() {
 
   // Saving anytime changes are made
   saveState();
-  console.log("From main", customerEmail);
+
+
   return (
     <div className="flex flex-col min-h-screen relative">
       <div className="z-40">
@@ -169,8 +170,11 @@ export default function Main() {
           </div>
           <AutoSlidingSlider images={infinityScrollImages} />
         </SectionWrapper>
-        <SectionWrapper className="w-full py-12 md:py-24 lg:py-32 xl:py-48 sm:flex sm:justify-center">
-          <div className="container">
+
+        {/* BUY NOW */}
+        <section className="bg-gradient-to-b from-lightAlmond to-gray-50">
+        <SectionWrapper className="w-full py-12 md:py-24 lg:py-32 xl:py-48 sm:flex sm:justify-center ">
+          <div className="">
             <div className="grid gap-6 md:grid-cols-[1fr_400px] md:gap-12 xl:grid-cols-[1fr_600px]">
               <Image
                 alt="Wool Dryer Balls"
@@ -208,15 +212,17 @@ export default function Main() {
             </div>
           </div>
         </SectionWrapper>
-        {/* <DraggableView360 images={infinityScrollImages} height={600} width={600} /> */}
-        {/* Benefits */}
-        {/* Product ShowCase */}
+        </section>
 
+
+  
+        {/* Product ShowCase */}
         <ShowCaseSlider />
 
+        {/* Benefits */}
         <section
           id="benefits"
-          className="w-full py-12 md:py-24 lg:py-32 bg-white "
+          className="w-full py-12 md:py-24 lg:py-32  bg-gradient-to-b  from-lightAlmond from-10% to-white"
         >
           <div className="container  max-w-[1200px] mx-auto">
             <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl text-center mb-8">
@@ -249,15 +255,16 @@ export default function Main() {
           </div>
         </section>
         {/* How to use */}
-        <section className="bg-gray-100">
+        <section className="bg-gradient-to-b from-white to-gray-50">
           <SectionWrapper
             id="how-to-use"
             className="w-full py-12 md:py-24 lg:py-32"
           >
-            <div className="container">
+            <div className=" max-xs:flex max-xs:justify-center ">
               <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl text-center mb-8">
                 How to Use
               </h2>
+              <div className="w-full flex justify-center ">
               <ol className="space-y-4 list-decimal list-inside">
                 <li className="text-lg">
                   Add 3-6 wool dryer balls to your dryer with your wet laundry.
@@ -274,6 +281,7 @@ export default function Main() {
                   Store the wool dryer balls in a dry place for next use.
                 </li>
               </ol>
+              </div>
             </div>
           </SectionWrapper>
         </section>

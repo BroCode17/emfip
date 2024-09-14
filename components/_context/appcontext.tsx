@@ -1,7 +1,6 @@
 "use client";
 import React, { createContext, useContext, useEffect, useReducer } from "react";
 import Cookies from "js-cookie";
-import { info } from "console";
 
 type AppState = {
   state: any;
@@ -17,6 +16,7 @@ type AppState = {
   updateCustomerEmail: (...args: any) => void;
   saveState: () => void;
   setState?: (s: any) => void;
+  resetState: () => void
 };
 /**
  *  {
@@ -53,6 +53,7 @@ const initialState: AppState = {
   updateCustomerEmail: (...args: any) => {},
   saveState: () => {},
   setState: (s: any) => {},
+  resetState: () => {}
 };
 
 // Actions for the reducer
@@ -63,6 +64,7 @@ const enum ActionType {
   CUSTOMER_INFOMATION = "CUSTOMER_INFOMATION",
   UPDATE_CUSTOMER_EMAIL = "UPDATE_CUSTOMER_EMAIL",
   SET_STATE = "SET_STATE",
+  RESET_STATE = "RESET_STATE",
 }
 
 // Reducer function to handle cart actions
@@ -85,7 +87,7 @@ const appReducer = (state: AppState, action: any) => {
       } else {
         return {
           ...state,
-          cartItems: [...state.cartItems, { ...action.payload, quantity: 1 }],
+          cartItems: [...state.cartItems, { ...action.payload, quantity: 1}],
           totalAmount: state.totalAmount + action.payload.price,
         };
       }
@@ -98,7 +100,7 @@ const appReducer = (state: AppState, action: any) => {
         ...state,
         cartItems: updatedCartItems,
         totalAmount:
-          state.totalAmount - action.payload.price * action.payload.quantity,
+          state.totalAmount - action.payload.price * action.payload.quantity, price_at_purchase:action.payload.price
       };
 
     case ActionType.UPDATE_ITEM_QUANTITY:
@@ -130,7 +132,6 @@ const appReducer = (state: AppState, action: any) => {
         customerEmail: action.payload.email,
       };
     case ActionType.SET_STATE:
-      console.log(action.payload.s);
       return {
         ...state,
         cartItems: action.payload.s.cartItems,
@@ -138,6 +139,9 @@ const appReducer = (state: AppState, action: any) => {
         customerInfo: action.payload.s.customerInfo,
         info: action.payload.s.info,
       };
+    case ActionType.RESET_STATE:
+      state = action.payload.initialState
+      return state
     default:
       return state;
   }
@@ -216,7 +220,20 @@ export const AppContextProvider = ({
       info: state.info,
     };
 
-    Cookies.set("state", JSON.stringify(stateObject), {expires: 30});
+    Cookies.set("state", JSON.stringify(stateObject), {expires: 3});
+  };
+
+  const resetState = () => {
+    const stateObject = {
+      cartItems: state.cartItems,
+      totalAmount: state.totalAmount,
+      customerInfo: state.customerInfo,
+      info: state.info,
+    };
+    dispatch({type: ActionType.RESET_STATE, payload: {
+      initialState
+    }})
+    Cookies.remove("state");
   };
 
   return (
@@ -234,6 +251,7 @@ export const AppContextProvider = ({
         saveState,
         state,
         info: state.info,
+        resetState
       }}
     >
       {children}

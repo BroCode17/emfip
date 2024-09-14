@@ -41,7 +41,7 @@ const ShowCaseSlider = () => {
     setCurrentSlide((prevSlide) => (prevSlide - 1 + carouselItems.length) % carouselItems.length)
   }
   return (
-    <section className="w-full py-12 md:py-24 lg:py-32 bg-gray-100 dark:bg-gray-800 flex justify-center">
+    <section className="w-full py-12 md:py-24 lg:py-32 bg-gradient-to-b from-gray-50 from-10% to-lightAlmond dark:bg-gray-800 flex justify-center">
       <div className="container px-4 md:px-6 space-y-10">
         <h2 className="base-header text-center ">Product Showcase</h2>
         <div className="relative overflow-hidden">

@@ -4,22 +4,48 @@ import Link from 'next/link'
 import { Check, Truck, Calendar, ArrowRight } from 'lucide-react'
 import { formatToLocaleCurrency, getFormattedFutureDate } from '@/lib/utils'
 import { useAppContext } from '@/components/_context/appcontext'
+import { useEffect, useState } from 'react'
+import Cookies from 'js-cookie'
+import { Button } from '@/components/ui/button'
+import { useRouter } from 'next/navigation'
 
-export default function OrderConfirmation() {
-  // In a real application, you would fetch this data from your backend
-  const {cartItems, totalAmount} = useAppContext()
+export default function OrderConfirmation({params} : {params: {orderId: string}}) {
+  const router = useRouter()
+  const {cartItems, totalAmount, resetState} = useAppContext()
+  const[backUpOrderId, setBackUpOrderId] = useState<string>()
 
-  const orderDetails = {
-    orderNumber: '12345',
-    estimatedDelivery: 'June 15, 2023',
-    items: [
-      { name: 'Wool Dryer Balls', quantity: 6, price: 19.99 },
-    ],
-    total: 19.99,
-  }
+ useEffect(() => {
+    const od = Cookies.get('orderId');
+    if(od && params.orderId){
+      setBackUpOrderId(od)
+    }
+ }, [])
 
+ // In case user navigate back instead of user btn
+ useEffect(() => {
+  const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+    Cookies.remove('state')
+    Cookies.remove('orderId');
+    sessionStorage.setItem('isNavigatingBack', 'true');
+  };
+
+ 
+  window.addEventListener('beforeunload', handleBeforeUnload);
+
+  return () => {
+    window.removeEventListener('beforeunload', handleBeforeUnload);
+  };
+}, []);
+
+ const handleGoHome = () => {
+    // Remove dependency cookies from applicaton storage
+    resetState()
+    Cookies.remove('orderId');
+    router.replace('/')
+    
+ }
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-tr from-lightAlmond/60 to-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-3xl mx-auto">
         <div className="bg-white shadow sm:rounded-lg">
           <div className="px-4 py-5 sm:p-6">
@@ -39,7 +65,7 @@ export default function OrderConfirmation() {
               <dl className="divide-y divide-gray-200">
                 <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4">
                   <dt className="text-sm font-medium text-gray-500">Order number</dt>
-                  <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{orderDetails.orderNumber}</dd>
+                  <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{params.orderId || backUpOrderId}</dd>
                 </div>
                 <div className="py-4 sm:grid sm:py-5 sm:grid-cols-3 sm:gap-4">
                   <dt className="text-sm font-medium text-gray-500">Estimated delivery</dt>
@@ -87,10 +113,10 @@ export default function OrderConfirmation() {
 
             <div className="mt-8">
               <h2 className="text-lg font-medium text-gray-900">What&apos;s next?</h2>
-              <div className="mt-4 bg-blue-50 rounded-lg py-6 px-4 sm:px-6">
+              <div className="mt-4 bg-gray-50 rounded-lg py-6 px-4 sm:px-6">
                 <div className="flex items-center">
-                  <Truck className="h-6 w-6 text-blue-600 mr-3" />
-                  <p className="text-sm text-blue-700">
+                  <Truck className="h-8 w-8 text-black mr-3" />
+                  <p className="text-sm text-black/90">
                     We&apos;re preparing your Wool Dryer Balls for shipment. You&apos;ll receive a shipping confirmation email with tracking information once your order is on its way.
                   </p>
                 </div>
@@ -98,13 +124,15 @@ export default function OrderConfirmation() {
             </div>
 
             <div className="mt-8 flex justify-center">
-              <Link
-                href="/"
-                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              <Button
+                
+                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-black/90 hover:bg-black/70 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+
+                onClick={handleGoHome}
               >
                 Continue Shopping
                 <ArrowRight className="ml-2 h-4 w-4" />
-              </Link>
+              </Button>
             </div>
           </div>
         </div>

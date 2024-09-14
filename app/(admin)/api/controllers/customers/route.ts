@@ -1,4 +1,4 @@
-import { generateOrderId } from "@/lib/help";
+import { getStringDate } from "@/lib/help";
 import { getError } from "@/lib/logger";
 import { NextRequest, NextResponse } from "next/server";
 import { Client, Databases, ID, Query} from "node-appwrite";
@@ -57,16 +57,16 @@ export async function POST(request: NextRequest){
   const order_item = []
   try {
     for (const item of items) {
-      console.log(item.product_id)
+      console.log(item)
       const res = await database.createDocument(
         process.env.APPWRITE_DATABASE_ID!,
         process.env.APPWRITE_ORDER_ITEM_COLLECTION_ID!,
         // ID.custom('order_item_'+itemNumber.toString()),
         ID.unique(),
         {
-          product_id: item.product_id.toString(),
+          product_id: item.id.toString(),
           quantity: item.quantity,
-          price_at_purchase: item?.price_at_purchase
+          price_at_purchase: item.price
         }
       );
   
@@ -76,24 +76,27 @@ export async function POST(request: NextRequest){
   } catch (error) {
     return getError(error)
   }
+  
+ //create status
+ const orderStatus:any = await createAndUpdateStatus(orderObject.status);
 
-   console.log("Order item", existCustomer)
-  //  return NextResponse.json({success: true})
   const order = await database.createDocument(
     process.env.APPWRITE_DATABASE_ID as string, // database id
    process.env.APPWRITE_ORDER_COLLECTION_ID as string, //collection id
-    generateOrderId().toString(),
+    orderObject.orderId.toString(),
     {
       customer_id: newCustomer ? newCustomer.$id : existCustomer.documents[0].$id,
       order_item: [...order_item],
-      ...orderObject
+      order_date: orderObject.order_data,
+      total_amount: orderObject.total_amount,
+      status: [orderStatus.$id],
     }
   )
 
 
-  return NextResponse.json({success: true, orderId: order.$id})
+  return NextResponse.json({success: true, order: order})
   } catch (error) {
-    console.error(error);
+    console.log(error)
     return getError(error)
   }
 }
@@ -134,3 +137,39 @@ async function getAllOrders(){
     return getError(error)
   }
 }
+
+export const createAndUpdateStatus = async (currentStatus: string, statusId?: string) => {
+   //create status
+  try {
+    let orderStatus:any;
+    
+    if(statusId){ //update status
+      console.log(statusId, ' updating')
+      orderStatus = await database.updateDocument(
+        process.env.APPWRITE_DATABASE_ID as string, // database id
+        process.env.APPWRITE_STATUS_ID as string,
+        statusId, // document id
+        { 
+          // date is the only thing to be updated
+          date: getStringDate(),
+        }
+       )
+    }else{ //create new status
+      orderStatus = await database.createDocument(
+      process.env.APPWRITE_DATABASE_ID as string, // database id
+      process.env.APPWRITE_STATUS_ID as string,
+      ID.unique(),
+      {
+        currentStatus,
+        date: getStringDate(),
+      }
+     )
+    }
+     
+     return orderStatus;
+  } catch (error) {
+    return getError(error)
+  }
+}
+
+// get string date

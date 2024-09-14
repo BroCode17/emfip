@@ -72,8 +72,22 @@ function getFormattedFutureDate(daysToAdd = 3) {
   const date = new Date(Date.now() + daysToAdd * 24 * 60 * 60 * 1000);
   return date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 }
+
+// Generate order id
+const  generateOrderId = () =>  {
+  const timestamp = new Date().toISOString().replace(/[-:]/g, '').slice(0, 14);
+  const random = Math.random().toString(36).substring(2, 7).toUpperCase();
+  return `ORD-${timestamp}-${random}`;
+}
+
+// Verify order number
+const verifyOrderNumber = (orderId: string) => {
+  return /^ORD-\d{8}T\d{5}-[A-Z0-9]{5}$/.test(orderId)
+} 
 export {
   formatReadableDate,
   formatToLocaleCurrency,
   getFormattedFutureDate,
+  generateOrderId,
+  verifyOrderNumber
 }

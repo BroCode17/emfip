@@ -21,11 +21,11 @@ const  generateOrderId = () =>  {
   return `ORD-${timestamp}-${random}`;
 }
 
+const getStringDate  = () =>  new Date().toISOString().slice(0, 10);
 
 
 export {
   saveSession,
   teminateSession,
-  generateOrderId,
-
+  getStringDate
 }
