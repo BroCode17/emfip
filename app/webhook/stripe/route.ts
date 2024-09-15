@@ -51,13 +51,14 @@ export async function POST(req: NextRequest) {
         quantity: order.order_item[0].quantity,
         price: order.order_item[0].price_at_purchase,
         customerEmail: order.customer_id.email,
-        trackingUrl: `${process.env.NEXT_PUBLIC_HOST}/order-tracking?orderId=${order.$id}`,
+        trackingUrl: `${process.env.HOST}/order-tracking?orderId=${order.$id}`,
         productName: 'Emfip Wool Drayer Balls' // Will be dynamic
       }
   
     
-    //  // make email send request
-    await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/sendmail`, {
+    //  // make email send request 
+    // will use resend instead of nodemailer later
+    await fetch(`${process.env.HOST}/api/sendmail`, {
       method: 'POST',
       body: JSON.stringify(emailObject)
     })

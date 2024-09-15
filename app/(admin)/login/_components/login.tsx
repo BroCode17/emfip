@@ -77,10 +77,11 @@ export default function Login({ user }: any) {
           </div>
           <Button type="submit" className="w-full">Log In</Button>
         </form>
-        <p className="text-center text-sm">
+        {/**SignUp is only for admin*/}
+        {/* <p className="text-center text-sm">
           Don't have an account?{' '}
           <a href="/signup" className="text-blue-600 hover:underline">Sign up</a>
-        </p>
+        </p> */}
       </div>
     </div>
   )
