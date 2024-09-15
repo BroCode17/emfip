@@ -4,23 +4,29 @@ import React, { useEffect, useState } from 'react'
 
 const carouselItems = [
   {
-    image: "1",
+    image: "1.jpg",
     alt: "Wool dryer balls in action",
     title: "Efficient Drying",
     description: "Reduce drying time by up to 25%"
   },
   {
-    image: '2',
+    image: '2.jpg',
     alt: "Soft fabrics",
     title: "Natural Softener",
     description: "Soften your clothes without chemicals"
   },
   {
-    image: "3",
+    image: "3.jpg",
     alt: "Eco-friendly laundry",
     title: "Eco-Friendly",
     description: "Reduce your carbon footprint"
-  }
+  },
+  {
+    image: "woooo.jpg",
+    alt: "Eco-friendly laundry",
+    title: "Eco-Friendly",
+    description: "For everyone"
+  },
 ]
 
 const ShowCaseSlider = () => {
@@ -53,7 +59,7 @@ const ShowCaseSlider = () => {
               <div key={index} className="w-full flex-shrink-0">
                 <div className="flex flex-col md:flex-row items-center justify-center gap-8">
                   <img
-                    src={`/images/products/${item.image}.jpg`}
+                    src={`/images/products/${item.image}`}
                     alt={item.alt}
                     className="w-full md:w-1/2 h-[600px] object-contain rounded-lg"
                   />

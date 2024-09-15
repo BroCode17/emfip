@@ -73,6 +73,7 @@ export default function OrderTracking() {
               (apiItem: any) =>
                 apiItem.currentStatus === prevStatus.currentStatus
             );
+          
             // If there's a match, update the date field, otherwise return the same object
             return matchingApiItem
               ? { ...prevStatus, date: matchingApiItem.date }

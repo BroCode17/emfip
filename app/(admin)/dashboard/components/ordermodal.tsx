@@ -10,6 +10,7 @@ import { formatToLocaleCurrency } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { toast } from '@/hooks/use-toast'
+import { useToast } from '@/components/_context/toast/toast-context'
 
 interface Product {
   id: string;
@@ -65,12 +66,14 @@ const ORDER_STATUSES = [
   'Processing',
   'Shipped',
   'Delivered',
-  'Cancelled'
+  'Cancelled',
+  'OutforDelivery'
 ]
 
 export function OrderModal({ order, isOpen, onClose, onUpdateStatus }: CustomerModalProps) {
   const [isMounted, setIsMounted] = useState(false);
-  const [selectedStatus, setSelectedStatus] = useState('');
+  const [selectedStatus, setSelectedStatus] = useState<string>('Pending');
+  const toast = useToast()
   useEffect(() => {
     setIsMounted(true);
   }, []);
@@ -89,10 +92,7 @@ export function OrderModal({ order, isOpen, onClose, onUpdateStatus }: CustomerM
   const handleUpdateStatus = () => {
     if (order && selectedStatus !== order.status) {
       onUpdateStatus(order.$id, selectedStatus);
-      toast({
-        title: "Order Status Updated",
-        description: `Order #${order.$id} status changed to ${selectedStatus}`,
-      });
+      toast?.open( `Order has been updated successfully`)
       onClose();
     }
   };
@@ -162,7 +162,7 @@ export function OrderModal({ order, isOpen, onClose, onUpdateStatus }: CustomerM
                 <label htmlFor="status" className="text-sm font-medium text-gray-700">
                   Order Status
                 </label>
-                <Select onValueChange={handleStatusChange} value={selectedStatus}>
+                <Select  onValueChange={handleStatusChange} value={selectedStatus.toString()}>
                   <SelectTrigger id="status">
                     <SelectValue placeholder="Select status" />
                   </SelectTrigger>

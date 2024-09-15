@@ -4,10 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { Client, Databases, ID, Query} from "node-appwrite";
 
 //create client
-const client = new Client()
-.setEndpoint(process.env.APPWRITE_END_POINT!)
-.setProject(process.env.APPWRITE_PROJECT_KEY!);
-
+const client = new Client().setEndpoint(process.env.APPWRITE_END_POINT!).setProject(process.env.APPWRITE_PROJECT_KEY!);
 //create client connetion
 const database = new Databases(client);
 
@@ -57,7 +54,7 @@ export async function POST(request: NextRequest){
   const order_item = []
   try {
     for (const item of items) {
-      console.log(item)
+      
       const res = await database.createDocument(
         process.env.APPWRITE_DATABASE_ID!,
         process.env.APPWRITE_ORDER_ITEM_COLLECTION_ID!,
@@ -78,7 +75,7 @@ export async function POST(request: NextRequest){
   }
   
  //create status
- const orderStatus:any = await createAndUpdateStatus(orderObject.status);
+ const orderStatus  = await createAndUpdateStatus(orderObject.status);
 
   const order = await database.createDocument(
     process.env.APPWRITE_DATABASE_ID as string, // database id
@@ -138,13 +135,13 @@ async function getAllOrders(){
   }
 }
 
-export const createAndUpdateStatus = async (currentStatus: string, statusId?: string) => {
+const createAndUpdateStatus = async (currentStatus: any, statusId?: any) => {
    //create status
   try {
     let orderStatus:any;
     
     if(statusId){ //update status
-      console.log(statusId, ' updating')
+     
       orderStatus = await database.updateDocument(
         process.env.APPWRITE_DATABASE_ID as string, // database id
         process.env.APPWRITE_STATUS_ID as string,

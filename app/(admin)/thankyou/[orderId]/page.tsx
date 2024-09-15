@@ -39,8 +39,8 @@ export default function OrderConfirmation({params} : {params: {orderId: string}}
 
  const handleGoHome = () => {
     // Remove dependency cookies from applicaton storage
-    resetState()
     Cookies.remove('orderId');
+    resetState()
     router.replace('/')
     
  }

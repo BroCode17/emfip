@@ -35,14 +35,13 @@ export async function POST(req: NextRequest) {
       }
 
     try {
-      const response = await fetch(`http://localhost:3000/api/controllers/orders`,
+      const response = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/controllers/orders`,
         {
           method: 'POST',
           body: JSON.stringify(dbObject),
         },
       );
       const {order} = await response.json()
-      console.log(order)
       const emailObject = {
         orderNumber: order.$id,
         customerName: customerInfo.full_name,
@@ -52,17 +51,17 @@ export async function POST(req: NextRequest) {
         quantity: order.order_item[0].quantity,
         price: order.order_item[0].price_at_purchase,
         customerEmail: order.customer_id.email,
-        trackingUrl: 'http://localhost:3000/order-tracking?orderId=ORD-20240914T15360-8WJKX'
+        trackingUrl: `${process.env.NEXT_PUBLIC_HOST}/order-tracking?orderId=${order.$id}`,
+        productName: 'Emfip Wool Drayer Balls' // Will be dynamic
       }
-      console.log(emailObject)
+  
     
     //  // make email send request
-    const emailResponse = await fetch('http://localhost:3000/api/sendmail', {
+    await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/sendmail`, {
       method: 'POST',
       body: JSON.stringify(emailObject)
     })
-    const email = await emailResponse.json()
-     console.log(email)
+
     } catch (error: any) {
       console.error("Error updating data:", error);
     }

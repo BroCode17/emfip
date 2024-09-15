@@ -61,12 +61,19 @@ export function ProductForm({ product, onSubmit, showDeleteModal, onClose, isErr
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target
-    setFormData(prev => ({ ...prev, [name]: value }))
+  
+    const { name, value, type } = e.target;
+
+    // Convert number fields appropriately
+    const newValue = type === 'number' ? Number(value) : value;
+  
+    setFormData(prev => ({ ...prev, [name]: newValue }))
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+   
+    
 
     //Check if showDeleteModal is true || product is present
     // This founction is for update and delete
@@ -97,7 +104,7 @@ export function ProductForm({ product, onSubmit, showDeleteModal, onClose, isErr
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 ">
+    <form onSubmit={handleSubmit} className="space-y-4 " >
       {error || isError && (
         <Alert variant="destructive">
           <AlertCircle className="h-4 w-4" />
@@ -106,9 +113,9 @@ export function ProductForm({ product, onSubmit, showDeleteModal, onClose, isErr
         </Alert>
       )}
       {showDeleteModal ? <div>
-
         <Label htmlFor="name">Confirm Item to be deleted name</Label>
         <Input
+         type='text'
           id="name"
           name="name"
           value={formData.name}
@@ -120,6 +127,7 @@ export function ProductForm({ product, onSubmit, showDeleteModal, onClose, isErr
           <div>
             <Label htmlFor="name">Product Name</Label>
             <Input
+              type='text'
               id="name"
               name="name"
               value={formData.name}
@@ -159,6 +167,7 @@ export function ProductForm({ product, onSubmit, showDeleteModal, onClose, isErr
           <div>
             <Label htmlFor="description">Description</Label>
             <Textarea
+        
               id="description"
               name="description"
               value={formData.description}

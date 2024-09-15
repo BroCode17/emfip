@@ -9,45 +9,14 @@ interface OrderDetails {
   totalPrice: number;
 }
 
-export const customerEmailTemplate = (order: OrderDetails) => `
-        <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.6;">
-          <h1 style="color: #4CAF50;">Thank you for your order, ${
-            order.customerName
-          }!</h1>
-          <p>We've received your order for ${order.quantity} ${
-  order.productName
-}(s).</p>
-          <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
-            <tr>
-              <th style="text-align: left; padding: 8px; background-color: #f2f2f2;">Order ID</th>
-              <td style="padding: 8px;">${order.orderId}</td>
-            </tr>
-            <tr>
-              <th style="text-align: left; padding: 8px; background-color: #f2f2f2;">Product</th>
-              <td style="padding: 8px;">${order.productName}</td>
-            </tr>
-            <tr>
-              <th style="text-align: left; padding: 8px; background-color: #f2f2f2;">Quantity</th>
-              <td style="padding: 8px;">${order.quantity}</td>
-            </tr>
-            <tr>
-              <th style="text-align: left; padding: 8px; background-color: #f2f2f2;">Total Price</th>
-              <td style="padding: 8px;">$${order.totalPrice.toFixed(2)}</td>
-            </tr>
-          </table>
-          <p style="margin-top: 20px;">We'll process your order soon and send you a shipping confirmation.</p>
-          <p style="margin-top: 20px;">Best regards,<br>Your Company Team</p>
-        </div>
-      `;
-
-export const adminEmailTemplate = (order: OrderDetails) => `
+export const adminEmailTemplate = (order: any) => `
         <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.6;">
           <h1 style="color: #FF5722;">New Order Received</h1>
           <p>A new order has been placed. Please find the details below:</p>
           <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
             <tr>
               <th style="text-align: left; padding: 8px; background-color: #f2f2f2;">Order ID</th>
-              <td style="padding: 8px;">${order.orderId}</td>
+              <td style="padding: 8px;">${order.orderNumber}</td>
             </tr>
             <tr>
               <th style="text-align: left; padding: 8px; background-color: #f2f2f2;">Customer Name</th>
@@ -63,7 +32,9 @@ export const adminEmailTemplate = (order: OrderDetails) => `
             </tr>
             <tr>
               <th style="text-align: left; padding: 8px; background-color: #f2f2f2;">Total Price</th>
-              <td style="padding: 8px;">$${order.totalPrice.toFixed(2)}</td>
+              <td style="padding: 8px;">${formatToLocaleCurrency(
+                order.totalAmount
+              )}</td>
             </tr>
           </table>
           <p style="margin-top: 20px;">Please process this order as soon as possible.</p>
@@ -84,23 +55,22 @@ interface OrderConfirmationEmailProps {
   orderItems: any[];
   totalAmount: number;
   shippingAddress: string;
-  quantity: number,
+  quantity: number;
   price: number;
-  productName: string,
-  trackingUrl: string
-  
+  productName: string;
+  trackingUrl: string;
 }
 
 export const OrderConfirmationEmail = ({
-        orderNumber,
-        customerName,
-        totalAmount,
-        shippingAddress,
-        orderDate,
-        quantity,
-        productName,
-        price,
-        trackingUrl,
+  orderNumber,
+  customerName,
+  totalAmount,
+  shippingAddress,
+  orderDate,
+  quantity,
+  productName,
+  price,
+  trackingUrl,
 }: OrderConfirmationEmailProps) =>
   `<html lang="en">
 <head>
@@ -207,9 +177,7 @@ export const OrderConfirmationEmail = ({
 </head>
 <body>
     <div class="container">
-        <div class="header-logo">
-            <img src="https://via.placeholder.com/150" alt="Company Logo">
-        </div>
+        
         <div class="email-body">
             <h1>Order Confirmation</h1>
             
@@ -219,7 +187,7 @@ export const OrderConfirmationEmail = ({
             
             <h2>Order Summary</h2>
             <p><strong>Order Number:</strong> ${orderNumber}</p>
-            <p><strong>Order Date:</strong> ${orderDate}</p>
+            <p><strong>Order Date:</strong> ${orderDate.slice(0, 10)}</p>
             
             <table>
                 <thead>
@@ -234,14 +202,18 @@ export const OrderConfirmationEmail = ({
                     <tr>
                         <td>${productName}</td>
                         <td class="text-right">${quantity}</td>
-                        <td class="text-right">${formatToLocaleCurrency(price || 10)}</td>
+                        <td class="text-right">${formatToLocaleCurrency(
+                          price || 10
+                        )}</td>
                     </tr>
                    
                 </tbody>
                 <tfoot>
                     <tr>
                         <td colspan="2" class="text-right total">Total:</td>
-                        <td class="text-right total">${formatToLocaleCurrency(totalAmount)}</td>
+                        <td class="text-right total">${formatToLocaleCurrency(
+                          totalAmount
+                        )}</td>
                     </tr>
                 </tfoot>
             </table>
@@ -264,3 +236,117 @@ export const OrderConfirmationEmail = ({
 </body>
 </html>
 `;
+
+/**
+ * <div class="header-logo">
+            <img src="https://via.placeholder.com/150" alt="Company Logo">
+        </div>
+ */
+interface OrderItem {
+  name: string;
+  quantity: number;
+  price: number;
+}
+
+interface OrderDeliveredEmailData {
+  customerName: string;
+  orderNumber: string;
+  deliveryDate: string;
+  deliveryAddress: string;
+  //orderItems: OrderItem[];
+  totalAmount: number;
+  quantity: number;
+  productName: string;
+  price: number;
+  deliveryUrl: string;
+}
+
+export function generateOrderDeliveredEmail(
+  data: OrderDeliveredEmailData
+): string {
+  const {
+    customerName,
+    orderNumber,
+    deliveryDate,
+    deliveryAddress,
+    totalAmount,
+    quantity,
+    productName,
+    price,
+    deliveryUrl,
+  } = data;
+  // Use for array of
+  // const orderItemsHtml = orderItems.map(item => `
+  //   <tr>
+  //     <td style="padding: 10px; border: 1px solid #dddddd;">${item.name}</td>
+  //     <td style="padding: 10px; border: 1px solid #dddddd;">${item.quantity}</td>
+  //     <td style="padding: 10px; border: 1px solid #dddddd;">$${item.price.toFixed(2)}</td>
+  //   </tr>
+  // `).join('');
+
+  return `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Order Has Been Delivered!</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #f4f4f4; color: #333333;">
+    <table role="presentation" style="width: 100%; border-collapse: collapse;">
+        <tr>
+            <td align="center" style="padding: 0;">
+                <table role="presentation" style="width: 600px; margin: auto; background-color: #ffffff; padding: 20px; border-radius: 8px; margin-top: 20px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+                    <tr>
+                        <td align="center" style="padding: 0;">
+                            <h1 style="color: #000; font-size: 24px; margin-bottom: 20px;">Your Order Has Been Delivered!</h1>
+                            <p style="font-size: 16px; line-height: 1.5; margin-bottom: 20px;">Dear ${customerName},</p>
+                            <p style="font-size: 16px; line-height: 1.5; margin-bottom: 20px;">Great news! Your order has been delivered. We hope you're excited to start using your new laundry wool dryer balls!</p>
+                            <table role="presentation" style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+                                <tr>
+                                    <td style="padding: 10px; border: 1px solid #dddddd; font-weight: bold;">Order Number:</td>
+                                    <td style="padding: 10px; border: 1px solid #dddddd;">${orderNumber}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 10px; border: 1px solid #dddddd; font-weight: bold;">Delivery Date:</td>
+                                    <td style="padding: 10px; border: 1px solid #dddddd;">${deliveryDate}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 10px; border: 1px solid #dddddd; font-weight: bold;">Delivery Address:</td>
+                                    <td style="padding: 10px; border: 1px solid #dddddd;">${deliveryAddress}</td>
+                                </tr>
+                            </table>
+                            <h2 style="color: #000; font-size: 20px; margin-bottom: 15px;">Order Summary</h2>
+                            <table role="presentation" style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+                                <tr style="background-color: #f8f8f8;">
+                                    <th style="padding: 10px; border: 1px solid #dddddd; text-align: left;">Item</th>
+                                    <th style="padding: 10px; border: 1px solid #dddddd; text-align: left;">Quantity</th>
+                                    <th style="padding: 10px; border: 1px solid #dddddd; text-align: left;">Price</th>
+                                </tr>
+                               <tr>
+      <td style="padding: 10px; border: 1px solid #dddddd;">${productName}</td>
+      <td style="padding: 10px; border: 1px solid #dddddd;">${quantity}</td>
+      <td style="padding: 10px; border: 1px solid #dddddd;">${formatToLocaleCurrency(
+        price
+      )}</td>
+    </tr>
+                                <tr>
+                                    <td style="padding: 10px; border: 1px solid #dddddd; font-weight: bold;" colspan="2">Total:</td>
+                                    <td style="padding: 10px; border: 1px solid #dddddd; font-weight: bold;">${formatToLocaleCurrency(
+                                      totalAmount
+                                    )}</td>
+                                </tr>
+                            </table>
+                            <p style="font-size: 16px; line-height: 1.5; margin-bottom: 20px;">If you have any questions or concerns about your order, please don't hesitate to contact our customer support team.</p>
+                            <a href="${deliveryUrl}" style="display: inline-block; padding: 10px 20px; background-color: #000; color: #ffffff; text-decoration: none; border-radius: 5px; font-weight: bold;">View Order Details</a>
+                            <p style="font-size: 14px; line-height: 1.5; margin-top: 30px; color: #666666;">Thank you for choosing Emfip Wool Dryer Ball Co. We hope you enjoy your eco-friendly laundry solution!</p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
+  `;
+}

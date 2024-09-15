@@ -9,6 +9,7 @@ import { ToastAction } from '@/components/ui/toast'
 import { Loader2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { ErrorMap, Product, ProductActionType } from '@/lib'
+import LaundryLoading from '@/components/loading'
 
 
 
@@ -17,6 +18,7 @@ const ProductPage = () => {
   const [allErrors, setAllErrors] = useState<Map<string, string>>(new Map())
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [products, setProducts] = useState([])
+  const [sq, setSq] = useState('')
   const { toast } = useToast()
   const router = useRouter();
 
@@ -77,8 +79,9 @@ const ProductPage = () => {
           handleGetAllProduct();
           return
         }
-        console.log(data)
+       
       } catch (error) {
+        console.log(error)
       }
     } else {
 
@@ -115,10 +118,12 @@ const ProductPage = () => {
     // Delet of the big boys and craft
   }
 
+  const filteredProduct = products.filter((product:any) => product.name.toLocaleLowerCase().includes(sq.toLocaleLowerCase()))
+
   return (
     <div className='w-full'>
       <div className="flex justify-between items-center mb-4">
-        <Input className="max-w-sm" placeholder="Search products..." />
+        <Input className="max-w-sm" placeholder="Search products..." value={sq} onChange={e => setSq(e.target.value)} />
         <ProductModal onSubmit={handleSubmit} isError={isError} allErrors={allErrors} />
       </div>
       <Table>
@@ -132,7 +137,7 @@ const ProductPage = () => {
         </TableHeader>
         <TableBody>
           {
-            products.map((product: any) => (
+            filteredProduct.map((product: any) => (
               <TableRow key={product.name}>
                 <TableCell>{product.name}</TableCell>
                 <TableCell>${product.price}</TableCell>
@@ -146,7 +151,7 @@ const ProductPage = () => {
 
         </TableBody>
       </Table>
-      {isLoading && <Loader2 className='animate-spin' />}
+      {isLoading && <LaundryLoading />}
     </div>
   )
 }
