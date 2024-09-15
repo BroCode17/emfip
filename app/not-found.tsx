@@ -1,3 +1,4 @@
+import LoadingAnimation from "@/components/animations/loading-animation"
 import { Button } from "@/components/ui/button"
 import { Loader2 } from "lucide-react"
 import Link from "next/link"
@@ -6,7 +7,7 @@ export default function NotFound() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-lightAlmond to-gray-50 px-4 text-center">
       <div className="mb-8 animate-bounce">
-        <Loader2 className="h-24 w-24 text-gray-400 animate-spin" />
+       <LoadingAnimation />
       </div>
       <h1 className="text-4xl font-bold text-gray-800 mb-4">404 - Page Not Found</h1>
       <p className="text-xl text-gray-600 mb-8">
