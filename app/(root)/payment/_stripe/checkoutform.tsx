@@ -106,7 +106,7 @@ function Form({state, orderId}: {state:any, orderId: string}) {
         elements,
         confirmParams: {
           //use real hostname
-         return_url: `${process.env.NEXT_PUBLIC_HOST}/${orderId}`,
+         return_url: `${process.env.NEXT_PUBLIC_HOST}/thankyou/${orderId}`,
         },
       })
       .then(({ error }) => {
