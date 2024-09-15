@@ -98,7 +98,7 @@ export async function PUT(request: NextRequest) {
       await createAndUpdateStatus(currentStatus, isCurrentStatusExist.$id as string);
     }
 
-    if(currentStatus === 'Delivered' && !isCurrentStatusExist ){
+    if(currentStatus === 'Delivered' ){
       // Send email to customer
       const orderDetails = {
         customerName: document.customer_id.full_name,
