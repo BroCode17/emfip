@@ -1,10 +1,10 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import * as z from 'zod'
-import { Button } from "@/components/ui/button"
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -13,7 +13,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
+} from "@/components/ui/dialog";
 import {
   Form,
   FormControl,
@@ -22,14 +22,18 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { toast } from '@/hooks/use-toast'
-import { useInViewContext } from './inviewcontext'
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 
+import { useInViewContext } from "./inviewcontext";
+import { useToast } from "./_context/toast/toast-context";
+import { useRouter } from "next/navigation";
+import { useAppContext } from "./_context/appcontext";
+import { generateOrderId } from "@/lib/utils";
+import Cookies from "js-cookie";
 
 const formSchema = z.object({
-  fullName: z.string().min(2, {
+  full_name: z.string().min(2, {
     message: "Full name must be at least 2 characters.",
   }),
   email: z.string().email({
@@ -41,53 +45,58 @@ const formSchema = z.object({
   city: z.string().min(2, {
     message: "City must be at least 2 characters.",
   }),
-  zipCode: z.string().regex(/^\d{5}(-\d{4})?$/, {
+  zip_code: z.string().regex(/^\d{5}(-\d{4})?$/, {
     message: "Please enter a valid ZIP code.",
   }),
-})
+  state: z.string().min(2).max(2, "Enter state initials").toUpperCase(),
+});
 
 export default function ProceedToCheckoutModal() {
-  const { showCheckout, setShowCheckout } = useInViewContext()
-  const [isOpen, setIsOpen] = useState(showCheckout || false)
-
+  const { showCheckout, setShowCheckout } = useInViewContext();
+  const [isOpen, setIsOpen] = useState(showCheckout || false);
+  const router = useRouter();
+  const toast = useToast();
+  const { updateCustomer, customerInfo, cartItems, updateCustomerEmail, info } =
+    useAppContext();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      fullName: "",
+      full_name: "",
       email: "",
       address: "",
       city: "",
-      zipCode: "",
+      zip_code: "",
+      state: "",
     },
-  })
+  });
 
-  const handleSetShowCheckout = () => setShowCheckout(false)
+  useEffect(() => {}, [info]);
+
+  const handleSetShowCheckout = () => setShowCheckout(false);
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     // Here you would typically send the form data to your server
-    // and then redirect to the payment page
-    console.log(values)
-    toast({
-      title: "Checkout information submitted",
-      description: "You are being redirected to the payment page...",
-    })
-    setIsOpen(false)
-    setShowCheckout(false)
-    // Simulate redirect to payment page
-    setTimeout(() => {
-      alert("Redirecting to payment page...")
-    }, 2000)
-  }
+    updateCustomer(values);
 
-  if (!showCheckout)
-    return
+    // Simulate redirect to payment page
+    toast?.open("Redirecting to payment page...");
+
+    setTimeout(() => {
+      setIsOpen(false);
+      setShowCheckout(false);
+      const orderId = generateOrderId();
+      Cookies.set('orderId', orderId, {expires: 3})
+      router.push(`/payment/${orderId}`);
+    }, 3000);
+  }
+  if (!showCheckout) return;
 
   return (
     <Dialog open={showCheckout} onOpenChange={handleSetShowCheckout}>
       {/* <DialogTrigger asChild>
         <Button variant="default" onClick={() => setIsOpen(true)}>Proceed to Checkout</Button>
       </DialogTrigger> */}
-      <DialogContent className="sm:max-w-[425px] bg-lightAlmond border-black border">
+      <DialogContent className="sm:max-w-[425px] bg-gradient-to-b from-lightAlmond to-gray-50 border-black border">
         <DialogHeader>
           <DialogTitle>Checkout Information</DialogTitle>
           <DialogDescription>
@@ -98,7 +107,7 @@ export default function ProceedToCheckoutModal() {
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
               control={form.control}
-              name="fullName"
+              name="full_name"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Full Name</FormLabel>
@@ -116,7 +125,11 @@ export default function ProceedToCheckoutModal() {
                 <FormItem>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input type="email" placeholder="bro@example.com" {...field} />
+                    <Input
+                      type="email"
+                      placeholder="bro@example.com"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -148,19 +161,39 @@ export default function ProceedToCheckoutModal() {
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name="zipCode"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>ZIP Code</FormLabel>
-                  <FormControl>
-                    <Input placeholder="12345" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <div className="flex gap-2">
+              <FormField
+                control={form.control}
+                name="state"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>State</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="IL"
+                        {...field}
+                        maxLength={2}
+                        className="uppercase"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="zip_code"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Zip Code</FormLabel>
+                    <FormControl>
+                      <Input placeholder="12345" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
             <DialogFooter>
               <Button type="submit">Proceed to Payment</Button>
             </DialogFooter>
@@ -168,5 +201,5 @@ export default function ProceedToCheckoutModal() {
         </Form>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

@@ -11,7 +11,7 @@ export function Banner() {
     return (
         <div className="bg-primary text-primary-foreground px-4 py-3 text-center relative">
             <p className="text-sm font-medium">
-                🎉 Special Offer: Buy 2 sets, get 1 free! Use code ECOLAUNDRY at checkout
+                🎉 Special Offer: Buy 2 sets, get 1 free! Use code EMFIP at checkout
             </p>
             <Button
                 variant="ghost"
