@@ -260,7 +260,7 @@ export default function Main() {
             id="how-to-use"
             className="w-full py-12 md:py-24 lg:py-32"
           >
-            <div className=" max-xs:flex max-xs:justify-center ">
+            <div className=" max-xs:flex max-xs:justify-center max-xs:flex-col">
               <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl text-center mb-8">
                 How to Use
               </h2>
@@ -291,7 +291,7 @@ export default function Main() {
           className="w-full py-12 md:py-24 lg:py-32 bg-white"
         >
           <SectionWrapper>
-            <div className="container">
+            <div className="">
               <div className="grid gap-6 md:grid-cols-2 lg:gap-12">
                 <div className="flex flex-col justify-center space-y-4">
                   <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">
