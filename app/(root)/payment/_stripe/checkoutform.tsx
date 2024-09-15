@@ -105,8 +105,8 @@ function Form({state, orderId}: {state:any, orderId: string}) {
       .confirmPayment({
         elements,
         confirmParams: {
-          // return_url: `${process.env.NEXT_PUBLIC_SERVER_URL  || 'https://amoarte.online'}/thankyou`,
-         return_url: `http://localhost:3000/thankyou/${orderId}`,
+          //use real hostname
+         return_url: `${process.env.NEXT_PUBLIC_HOST}/${orderId}`,
         },
       })
       .then(({ error }) => {
