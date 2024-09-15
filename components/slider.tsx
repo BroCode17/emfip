@@ -58,7 +58,7 @@ export default function AutoSlidingSlider({ images, interval = 20 }: AutoSliding
 
     return (
         <div className="relative w-full overflow-hidden">
-            <div className="absolute z-10 left-0 bg-gradient-to-r from-lightAlmond  to-transparent w-1/6 h-full dark:from-black dark:via-black" />
+            <div className="absolute z-10 left-0 bg-gradient-to-r from-lightAlmond  w-1/6 h-full dark:from-black" />
             <div
                 ref={scrollRef}
                 className="flex overflow-x-hidden"
@@ -66,7 +66,7 @@ export default function AutoSlidingSlider({ images, interval = 20 }: AutoSliding
             >
                 {renderImages()}
             </div>
-            <div className="absolute z-10 top-0 right-0 bg-gradient-to-l from-lightAlmond  to-transparent w-1/6 h-full" />
+            <div className="absolute z-10 top-0 right-0 bg-gradient-to-l from-lightAlmond  dark:from-black   w-1/6 h-full" />
         </div>
     )
 }
