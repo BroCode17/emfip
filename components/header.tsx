@@ -10,7 +10,7 @@ import Image from 'next/image'
 
 const Header = () => {
   const [isVisible, setIsVisible] = useState(true)
-  const [lastScrollY, setLastScrollY] = useState(0)
+  const [lastScrollY, setLastScrollY] = useState(1)
   const pathname = usePathname()
   const { isVideoVisible } = useInViewContext()
 

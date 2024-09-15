@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
   try {
     const responseBody = await request.json();
     //make api request to customer
-    const order = await fetch("http:localhost:3000/api/controllers/customers", {
+    const order = await fetch(`${process.env.HOST}/api/controllers/customers`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
