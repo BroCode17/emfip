@@ -127,7 +127,7 @@ export default function ProceedToCheckoutModal() {
                   <FormControl>
                     <Input
                       type="email"
-                      placeholder="bro@example.com"
+                      placeholder="user@emfip.com"
                       {...field}
                     />
                   </FormControl>
@@ -155,7 +155,7 @@ export default function ProceedToCheckoutModal() {
                 <FormItem>
                   <FormLabel>City</FormLabel>
                   <FormControl>
-                    <Input placeholder="New York" {...field} />
+                    <Input placeholder="Chicago" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
