@@ -42,17 +42,16 @@ export async function POST(req: NextRequest) {
         },
       );
       const {order} = await response.json()
+    
       const emailObject = {
         orderNumber: order.$id,
         customerName: customerInfo.full_name,
         totalAmount: order.total_amount,
         shippingAddress: `${customerInfo.address}, ${customerInfo.city}, ${customerInfo.state}, ${customerInfo.zip_code}`,
         orderDate: order.$createdAt,
-        quantity: order.order_item[0].quantity,
-        price: order.order_item[0].price_at_purchase,
+        orderItems: order.order_item,
         customerEmail: order.customer_id.email,
         trackingUrl: `${process.env.HOST}/order-tracking?orderId=${order.$id}`,
-        productName: 'Emfip Wool Drayer Balls' // Will be dynamic
       }
   
     

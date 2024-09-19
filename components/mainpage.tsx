@@ -122,7 +122,7 @@ export default function Main() {
           <div className="h-[400px] flex items-center">
             <div className=" ">
               <h3 className="text-gray-500">Eco-Friendly Laundry Solutions</h3>
-              <h1 className="base-header -ml-1">Empfip Wool Dryer Balls</h1>
+              <h1 className="base-header -ml-1">Emfip Wool Dryer Balls</h1>
               <p className="mt-10">
                 Make your laundry softer, reduce drying time, and save money
                 with our eco-friendly wool dryer balls.
