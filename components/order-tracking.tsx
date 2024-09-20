@@ -54,7 +54,7 @@ export default function OrderTracking() {
 
   useEffect(() => {
     const index = orderStatuses.findIndex((s) => s.date === "");
-    setCurrentStatus(index - 1);
+    setCurrentStatus(index === -1 ? 3 : index - 1);
   }, [orderStatuses]);
   // get order
   const getOrderData = async () => {
