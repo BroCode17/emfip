@@ -9,7 +9,7 @@ import { mailOptions, transporter } from "@/lib/nodemail";
 import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
 
-const resend = new Resend("re_QeZ36dwL_8HFHadK488Y2bDCFucRh7tDu");
+const resend = new Resend(process.env.RESEND_KEY);
 export async function POST(req: NextRequest) {
   const delivery = req.nextUrl.searchParams.get("final");
   const result = await req.json();
