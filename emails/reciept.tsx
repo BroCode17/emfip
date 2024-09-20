@@ -56,9 +56,9 @@ export const OrderConfirmationEmail: React.FC<Readonly<OrderConfirmationEmailPro
           <Img src={companyLogo} alt={companyName} width="150" height="50" />
         </Section> */}
         
-        <Heading style={h1}>Order Confirmation</Heading>
-        <Text style={text}>Dear {customerName},</Text>
-        <Text style={text}>Thank you for your order. We're pleased to confirm that we've received your order and it's being processed.</Text>
+        <Heading style={h1}>{`${admin ? 'Order Received' : 'Order Confirmation'}`}</Heading>
+        {!admin &&  ( <><Text style={text}>Dear {customerName},</Text>
+  <Text style={text}>Thank you for your order. We're pleased to confirm that we've received your order and it's being processed.</Text> </> )}
 
         <Section style={orderInfo}>
           <Text style={orderInfoText}>Order Number: <strong>{orderNumber}</strong></Text>
