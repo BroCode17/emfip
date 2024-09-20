@@ -28,7 +28,6 @@ export async function GET(request: NextRequest) {
         [] // queries
       );
     }
-    
   
     return NextResponse.json({ success: true, orderList});
   } catch (error) {
@@ -106,9 +105,7 @@ export async function PUT(request: NextRequest) {
         deliveryDate: new Date().toLocaleDateString(),
         deliveryAddress: `${document.customer_id.address} ${document.customer_id.city}, ${document.customer_id.state}, ${document.customer_id.zip_code}`,
         totalAmount: document.total_amount,
-        quantity: document.order_item[0].quantity,
-        productName: 'Emfip Wool Dryer Balls',
-        price: document.order_item[0].price_at_purchase,
+        orderItems: document.order_item,
         deliveryUrl: `${process.env.HOST}/order-tracking?orderId=${orderId}`,
         customerEmail: document.customer_id.email
       }
