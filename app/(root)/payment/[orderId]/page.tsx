@@ -47,7 +47,6 @@ const Payment = async ({params, searchParams} : { params: {amount: string, order
   if(paymentIntent.client_secret === null){
     throw Error('Stripe failed to create payment')
   }
-  console.log(paymentIntent.client_secret)
   return (
     
     <div className=" pb-10 w-full flex flex-col justify-center items-center h-screen gap-3  bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60 bg-gradient-to-bl from-lightAlmond to-gray-50">

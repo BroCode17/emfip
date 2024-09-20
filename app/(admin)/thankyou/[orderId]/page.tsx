@@ -19,7 +19,7 @@ export default function OrderConfirmation({params} : {params: {orderId: string}}
     if(od && params.orderId){
       setBackUpOrderId(od)
     }
- }, [])
+ }, [params.orderId])
 
  // In case user navigate back instead of user btn
  useEffect(() => {
