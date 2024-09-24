@@ -52,9 +52,8 @@ const sendMail = async () => {
    // Sending email is not critical, run it without blocking the response
    setLoading(true);
   try {
-    const [orderResponse] = await Promise.all([
-      fetch(`${process.env.NEXT_PUBLIC_HOST}/api/controllers/orders?orderId=${params.orderId}`),
-    ]);
+    const orderResponse= await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/controllers/orders?orderId=${params.orderId}`)
+  
     const data = await orderResponse.json();
     if(data.success === true){
       const order = data.orderList;
