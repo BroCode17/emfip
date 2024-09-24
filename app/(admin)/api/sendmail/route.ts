@@ -5,7 +5,6 @@ import {
   generateOrderDeliveredEmail,
 } from "@/lib/emailTemplate";
 import { getError } from "@/lib/logger";
-import { mailOptions, transporter } from "@/lib/nodemail";
 import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
 
@@ -31,6 +30,7 @@ export async function POST(req: NextRequest) {
         react: OrderConfirmationEmail({ ...result, admin: true }),
       });
     }
+    console.log('called')
     return NextResponse.json({
       message: "Order placed and emails sent successfully",
     });
