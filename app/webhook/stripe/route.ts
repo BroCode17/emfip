@@ -6,9 +6,8 @@ export const maxDuration = 60
 const stripe = new Stripe(process.env.STRIPE_WEBHOOK_SECRET as string);
 
 
-export async function POST(req: NextRequest) {
+export async function POST(req: NextRequest, ) {
   const start = performance.now();
-
   let event: Stripe.Event
     try {
       event = stripe.webhooks.constructEvent(
@@ -47,29 +46,11 @@ export async function POST(req: NextRequest) {
           }),
         ]);
   
-        const { order } = await orderResponse.json();
-  
-        const emailObject = {
-          orderNumber: order.$id,
-          customerName: customerInfo.full_name,
-          totalAmount: order.total_amount,
-          shippingAddress: `${customerInfo.address}, ${customerInfo.city}, ${customerInfo.state}, ${customerInfo.zip_code}`,
-          orderDate: order.$createdAt,
-          orderItems: order.order_item,
-          customerEmail: order.customer_id.email,
-          trackingUrl: `${process.env.HOST}/order-tracking?orderId=${order.$id}`,
-        };
-  
-        // Sending email is not critical, run it without blocking the response
-        fetch(`${process.env.HOST}/api/sendmail`, {
-          method: "POST",
-          body: JSON.stringify(emailObject),
-        });
-     console.log(`Time ${(performance.now() - start) / 1000}`)
+        await orderResponse.json();
     } catch (error: any) {
       console.error("Error updating data:", error);
+     
     }
   }
-
   return new NextResponse();
 }

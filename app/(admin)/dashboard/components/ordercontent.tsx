@@ -9,10 +9,8 @@ import {
   Table,
 } from "@/components/ui/table";
 import { formatReadableDate, formatToLocaleCurrency } from "@/lib/utils";
-import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { OrderModal } from "./ordermodal";
-import { useRouter } from "next/navigation";
 import LaundryLoading from "@/components/loading";
 
 export default function OrdersContent() {
