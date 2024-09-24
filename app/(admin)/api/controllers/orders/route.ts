@@ -51,12 +51,11 @@ export async function POST(request: NextRequest) {
     });
     
     //send mail only sendemail query is true
-    console.log(sendEmail)
     if(sendEmail){
       const data = await orderResponse.json();
     //send email but do not block the thread
     const order = data.order;
-    console.log(order)
+    
     const emailObject = {
       orderNumber: order.$id,
       customerName: order.customer_id.full_name,
@@ -74,7 +73,7 @@ export async function POST(request: NextRequest) {
     });  
     }
     //return the response 
-    return orderResponse
+    return NextResponse.json({success: true})
   } catch (error) {
     return getError(error);
   }
