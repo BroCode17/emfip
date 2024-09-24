@@ -43,7 +43,6 @@ export async function POST(req: NextRequest, ) {
             method: "POST",
             body: JSON.stringify(dbObject),
         })
-        console.log('done')
     } catch (error: any) {
       console.error("Error updating data:", error);
     }
