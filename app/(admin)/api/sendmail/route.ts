@@ -8,7 +8,6 @@ const resend = new Resend(process.env.RESEND_KEY);
 export async function POST(req: NextRequest) {
   const delivery = req.nextUrl.searchParams.get("final");
   const result = await req.json();
-
   try {
     // Construct the emails to be sent
     const customerEmailPromise = resend.emails.send({
