@@ -34,11 +34,10 @@ export async function POST(req: NextRequest) {
     await Promise.all([customerEmailPromise, adminEmailPromise].filter(Boolean));
 
     console.log('Emails sent successfully');
-    return NextResponse.json({
-      message: "Order placed and emails sent successfully",
-    });
+
   } catch (error) {
     console.error("Error sending emails:", error);
-    return NextResponse.json({ error: "Error sending emails" }, { status: 500 });
+    // return NextResponse.json({ error: "Error sending emails" }, { status: 500 });
   }
+  return new NextResponse();
 }
