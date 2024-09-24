@@ -25,14 +25,14 @@ export default function OrderConfirmation({params} : {params: {orderId: string}}
     }
  }, [params.orderId])
 
- useEffect(() => {
-  if(Cookies.get('orderId')){
-    sendMail()
-  }else{
-    setLoading(false)
-    router.replace('/')
-  }
-}, [])
+//  useEffect(() => {
+//   if(Cookies.get('orderId')){
+//     sendMail()
+//   }else{
+//     setLoading(false)
+//     router.replace('/')
+//   }
+// }, [])
 
  // In case user navigate back instead of user btn
  useEffect(() => {
@@ -48,38 +48,38 @@ export default function OrderConfirmation({params} : {params: {orderId: string}}
   };
 }, []);
 
-const sendMail = async () => {
-   // Sending email is not critical, run it without blocking the response
-   setLoading(true);
-  try {
-    const orderResponse= await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/controllers/orders?orderId=${params.orderId}`)
+// const sendMail = async () => {
+//    // Sending email is not critical, run it without blocking the response
+//    setLoading(true);
+//   try {
+//     const orderResponse= await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/controllers/orders?orderId=${params.orderId}`)
   
-    const data = await orderResponse.json();
-    if(data.success === true){
-      const order = data.orderList;
+//     const data = await orderResponse.json();
+//     if(data.success === true){
+//       const order = data.orderList;
   
-      const emailObject = {
-        orderNumber: order.$id,
-        customerName: order.customer_id.full_name,
-        totalAmount: order.total_amount,
-        shippingAddress: `${order.customer_id.address}, ${order.customer_id.city}, ${order.customer_id.state}, ${order.customer_id.zip_code}`,
-        orderDate: order.$createdAt,
-        orderItems: order.order_item,
-        customerEmail: order.customer_id.email,
-        trackingUrl: `${process.env.NEXT_PUBLIC_HOST}/order-tracking?orderId=${order.$id}`,
-      };
-      fetch(`${process.env.NEXT_PUBLIC_SENDMAIL_API}`, {
-        method: "POST",
-        body: JSON.stringify(emailObject),
-      });  
-    }
+//       const emailObject = {
+//         orderNumber: order.$id,
+//         customerName: order.customer_id.full_name,
+//         totalAmount: order.total_amount,
+//         shippingAddress: `${order.customer_id.address}, ${order.customer_id.city}, ${order.customer_id.state}, ${order.customer_id.zip_code}`,
+//         orderDate: order.$createdAt,
+//         orderItems: order.order_item,
+//         customerEmail: order.customer_id.email,
+//         trackingUrl: `${process.env.NEXT_PUBLIC_HOST}/order-tracking?orderId=${order.$id}`,
+//       };
+//       fetch(`${process.env.NEXT_PUBLIC_SENDMAIL_API}`, {
+//         method: "POST",
+//         body: JSON.stringify(emailObject),
+//       });  
+//     }
   
-  } catch (error) {
-    setError("Opps Error Occurred, Please contat customer support at emfip@proton.me")
-  }finally{
-    setLoading(false)
-  }
-}
+//   } catch (error) {
+//     setError("Opps Error Occurred, Please contat customer support at emfip@proton.me")
+//   }finally{
+//     setLoading(false)
+//   }
+// }
 
  const handleGoHome = () => {
     // Remove dependency cookies from applicaton storage
@@ -89,9 +89,9 @@ const sendMail = async () => {
     
  }
 
- if(loading){
-   return <LaundryLoading />
- }
+//  if(loading){
+//    return <LaundryLoading />
+//  }
 
   return (
     <div className="h-screen bg-gradient-to-tr from-lightAlmond/60 to-gray-50 py-12 px-4 sm:px-6 lg:px-8">

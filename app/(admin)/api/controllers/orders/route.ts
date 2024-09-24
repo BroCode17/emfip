@@ -39,8 +39,10 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const responseBody = await request.json();
+    const sc = request.nextUrl.searchParams;
+    const sendEmail = sc.get('sendEmail');
     //make api request to customer
-    const order = await fetch(`${process.env.HOST}/api/controllers/customers`, {
+    const orderResponse = await fetch(`${process.env.HOST}/api/controllers/customers`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -48,8 +50,31 @@ export async function POST(request: NextRequest) {
       body: JSON.stringify(responseBody),
     });
     
+    //send mail only sendemail query is true
+    console.log(sendEmail)
+    if(sendEmail){
+      const data = await orderResponse.json();
+    //send email but do not block the thread
+    const order = data.order;
+    console.log(order)
+    const emailObject = {
+      orderNumber: order.$id,
+      customerName: order.customer_id.full_name,
+      totalAmount: order.total_amount,
+      shippingAddress: `${order.customer_id.address}, ${order.customer_id.city}, ${order.customer_id.state}, ${order.customer_id.zip_code}`,
+      orderDate: order.$createdAt,
+      orderItems: order.order_item,
+      customerEmail: order.customer_id.email,
+      trackingUrl: `${process.env.NEXT_PUBLIC_HOST}/order-tracking?orderId=${order.$id}`,
+    };
+    //send email without blocking the main thread
+    fetch(`${process.env.NEXT_PUBLIC_SENDMAIL_API}`, {
+      method: "POST",
+      body: JSON.stringify(emailObject),
+    });  
+    }
     //return the response 
-    return order
+    return orderResponse
   } catch (error) {
     return getError(error);
   }
