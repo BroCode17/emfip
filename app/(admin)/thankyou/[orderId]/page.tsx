@@ -70,7 +70,7 @@ export default function OrderConfirmation({params} : {params: {orderId: string}}
                 <div className="py-4 sm:grid sm:py-5 sm:grid-cols-3 sm:gap-4">
                   <dt className="text-sm font-medium text-gray-500">Estimated delivery</dt>
                   <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                    <div className="flex items-center">
+                    <div className="flex items-center" suppressHydrationWarning>
                       <Calendar className="h-5 w-5 text-gray-400 mr-2" />
                       {getFormattedFutureDate(4)}
                     </div>
