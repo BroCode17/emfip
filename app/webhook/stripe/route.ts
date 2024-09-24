@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 
+export const maxDuration = 60
+
 const stripe = new Stripe(process.env.STRIPE_WEBHOOK_SECRET as string);
 
 console.log(process.env.STRIPE_WEBHOOK_SECRET)
