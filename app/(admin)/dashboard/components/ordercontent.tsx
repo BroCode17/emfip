@@ -44,7 +44,8 @@ export default function OrdersContent() {
       const res = await fetch("../../api/controllers/orders");
       const data = await res.json();
       if (data.success) {
-        setOrders(data.orderList.documents);
+        const newData = data.orderList.documents.reverse()
+        setOrders(newData);
       }
     } catch (error) {
       console.log(error);
@@ -77,8 +78,8 @@ export default function OrdersContent() {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center">
-      <div className="flex justify-between items-center mb-4 w-full">
+    <div className="flex flex-col items-center justify-center h-screen">
+      <div className="flex justify-between items-center mb-4 w-full ">
         <Input
           className="max-w-sm"
           placeholder="Search orders..."
@@ -88,7 +89,8 @@ export default function OrdersContent() {
         <Button>Export Orders</Button>
       </div>
       {!isLoading && (
-        <Table>
+      <div className="overflow-y-auto">
+          <Table>
           <TableHeader>
             <TableRow>
               <TableHead>Order ID</TableHead>
@@ -137,6 +139,7 @@ export default function OrdersContent() {
               })}
           </TableBody>
         </Table>
+      </div>
       )}
       <OrderModal
         order={selectedOrder}

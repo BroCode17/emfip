@@ -5,7 +5,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <section>
+    <section className=" custom-scrollbar">
       {children}
     </section>
   )
