@@ -1,11 +1,11 @@
-import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 
 const stripe = new Stripe(process.env.STRIPE_WEBHOOK_SECRET as string);
 
-
+console.log(process.env.STRIPE_WEBHOOK_SECRET)
 export async function POST(req: NextRequest) {
+
   let event: Stripe.Event
     try {
       event = stripe.webhooks.constructEvent(
@@ -17,6 +17,7 @@ export async function POST(req: NextRequest) {
       console.error('Webhook signature verification failed:', err.message);
       return new NextResponse(`Webhook Error: ${err.message}`, { status: 400 });
     }
+
   if (event.type === "charge.succeeded") {
     const charge = event.data.object;
     const totalAmount = charge.amount

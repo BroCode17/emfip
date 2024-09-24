@@ -78,7 +78,7 @@ export default function OrdersContent() {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen">
+    <div className="flex flex-col items-center justify-start h-screen">
       <div className="flex justify-between items-center mb-4 w-full ">
         <Input
           className="max-w-sm"
